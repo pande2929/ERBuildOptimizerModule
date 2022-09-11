@@ -6,7 +6,7 @@ import pybind11
 
 bo_module = Pybind11Extension(
     'ERBuildOptimizerModule',
-    sources=['module.cpp', "ERBuildOptimizer.cpp", "SubsetSum.cpp"],
+    sources=['cpp/module.cpp', "cpp/ERBuildOptimizer.cpp", "cpp/SubsetSum.cpp"],
     include_dirs=[pybind11.get_include()],
     language='c++',
     #extra_compile_args=cpp_args,
