@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "../include/pymodels.h"
-#include "../include/SubsetSum.h"
-#include "../include/ERBuildOptimizer.h"
+#include "./include/pymodels.h"
+#include "./include/SubsetSum.h"
+#include "./include/ERBuildOptimizer.h"
 
 namespace py = pybind11;
 

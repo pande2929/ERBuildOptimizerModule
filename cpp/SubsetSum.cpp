@@ -1,7 +1,7 @@
 #include <vector>
 #include <future>
 #include <algorithm>
-#include "../include/SubsetSum.h"
+#include "./include/SubsetSum.h"
 
 using namespace std;
 
