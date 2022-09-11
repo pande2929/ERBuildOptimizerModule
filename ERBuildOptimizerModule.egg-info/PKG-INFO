@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: er-build-optimizer-module
+Version: 0.8
+Summary: Build optimization backend functionality.
+Author: Richard Scales
+Author-email: richardscales118@gmail.com
+Requires-Python: >=3.6
