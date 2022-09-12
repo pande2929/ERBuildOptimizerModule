@@ -189,70 +189,43 @@ double ERBuildOptimizer::CalculatePassive(const int base,
 
   double adj_pt_grow[5]{adj_pt_grow_0, adj_pt_grow_1, adj_pt_grow_2, adj_pt_grow_3, adj_pt_grow_4,};
 
-  return base + base * CalculateCorrectFn(optimal_character.opt_arcane, stat_max, grow, adj_pt_grow) * correction_arc * correction_pct_arc / 10000.0;
+  return base + base * CalculateCorrectFn(optimal_character.opt_arcane, stat_max, grow, adj_pt_grow) * correction_arc * correction_pct_arc
+	  / 10000.0;
 }
 
 // Populate weapon skill damages and types.
 void ERBuildOptimizer::CalcWeaponSkill(const Weapon &selected_weapon, const Tarnished &tarnished, WeaponSkill &selected_skill) {
 
   // base_damage = weapon.damage_physical * weapon.damage_pct_physical * selected_skill.atk_correct_physical / 100.0 + 4 * selected_skill.atk_physical
-  double base_damage_physical = selected_weapon.damage_physical * selected_weapon.damage_pct_physical * selected_skill.atk_correct_physical / 100.0 + 4 * selected_skill.atk_physical;
-  double base_damage_magic = selected_weapon.damage_magic * selected_weapon.damage_pct_magic * selected_skill.atk_correct_magic / 100.0 + 4 * selected_skill.atk_magic;
-  double base_damage_fire = selected_weapon.damage_fire * selected_weapon.damage_pct_fire * selected_skill.atk_correct_fire / 100.0 + 4 * selected_skill.atk_fire;
-  double base_damage_lightning = selected_weapon.damage_lightning * selected_weapon.damage_pct_lightning * selected_skill.atk_correct_lightning / 100.0 + 4 * selected_skill.atk_lightning;
-  double base_damage_holy = selected_weapon.damage_holy * selected_weapon.damage_pct_holy * selected_skill.atk_correct_holy / 100.0 + 4 * selected_skill.atk_holy;
+  double base_damage_physical =
+	  selected_weapon.damage_physical * selected_weapon.damage_pct_physical * selected_skill.atk_correct_physical / 100.0
+		  + 4 * selected_skill.atk_physical;
+  double base_damage_magic = selected_weapon.damage_magic * selected_weapon.damage_pct_magic * selected_skill.atk_correct_magic / 100.0
+	  + 4 * selected_skill.atk_magic;
+  double base_damage_fire =
+	  selected_weapon.damage_fire * selected_weapon.damage_pct_fire * selected_skill.atk_correct_fire / 100.0 + 4 * selected_skill.atk_fire;
+  double base_damage_lightning =
+	  selected_weapon.damage_lightning * selected_weapon.damage_pct_lightning * selected_skill.atk_correct_lightning / 100.0
+		  + 4 * selected_skill.atk_lightning;
+  double base_damage_holy =
+	  selected_weapon.damage_holy * selected_weapon.damage_pct_holy * selected_skill.atk_correct_holy / 100.0 + 4 * selected_skill.atk_holy;
 
   bool two_hand_bonus = is_two_handing && !selected_skill.disable_2h_atk_bonus;
 
-  double damage_physical = CalculateCorrectedDamage(selected_weapon,
-													tarnished.opt_strength,
-													tarnished.opt_dexterity,
-													tarnished.opt_intelligence,
-													tarnished.opt_faith,
-													tarnished.opt_arcane,
-													DAMAGE_TYPE::PHYSICAL,
-													base_damage_physical,
-													two_hand_bonus);
+  AttributeTuple attribute_tuple
+	  {tarnished.opt_strength, tarnished.opt_dexterity, tarnished.opt_intelligence, tarnished.opt_faith, tarnished.opt_arcane};
 
-  double damage_magic = CalculateCorrectedDamage(selected_weapon,
-												 tarnished.opt_strength,
-												 tarnished.opt_dexterity,
-												 tarnished.opt_intelligence,
-												 tarnished.opt_faith,
-												 tarnished.opt_arcane,
-												 DAMAGE_TYPE::MAGIC,
-												 base_damage_magic,
-												 two_hand_bonus);
+  double damage_physical =
+	  CalculateCorrectedDamage(selected_weapon, attribute_tuple, DAMAGE_TYPE::PHYSICAL, base_damage_physical, two_hand_bonus);
 
-  double damage_fire = CalculateCorrectedDamage(selected_weapon,
-												tarnished.opt_strength,
-												tarnished.opt_dexterity,
-												tarnished.opt_intelligence,
-												tarnished.opt_faith,
-												tarnished.opt_arcane,
-												DAMAGE_TYPE::FIRE,
-												base_damage_fire,
-												two_hand_bonus);
+  double damage_magic = CalculateCorrectedDamage(selected_weapon, attribute_tuple, DAMAGE_TYPE::MAGIC, base_damage_magic, two_hand_bonus);
 
-  double damage_lightning = CalculateCorrectedDamage(selected_weapon,
-													 tarnished.opt_strength,
-													 tarnished.opt_dexterity,
-													 tarnished.opt_intelligence,
-													 tarnished.opt_faith,
-													 tarnished.opt_arcane,
-													 DAMAGE_TYPE::LIGHTNING,
-													 base_damage_lightning,
-													 two_hand_bonus);
+  double damage_fire = CalculateCorrectedDamage(selected_weapon, attribute_tuple, DAMAGE_TYPE::FIRE, base_damage_fire, two_hand_bonus);
 
-  double damage_holy = CalculateCorrectedDamage(selected_weapon,
-												tarnished.opt_strength,
-												tarnished.opt_dexterity,
-												tarnished.opt_intelligence,
-												tarnished.opt_faith,
-												tarnished.opt_arcane,
-												DAMAGE_TYPE::HOLY,
-												base_damage_holy,
-												two_hand_bonus);
+  double damage_lightning =
+	  CalculateCorrectedDamage(selected_weapon, attribute_tuple, DAMAGE_TYPE::LIGHTNING, base_damage_lightning, two_hand_bonus);
+
+  double damage_holy = CalculateCorrectedDamage(selected_weapon, attribute_tuple, DAMAGE_TYPE::HOLY, base_damage_holy, two_hand_bonus);
 
   selected_skill.max_physical_dmg = damage_physical;
   selected_skill.max_magic_dmg = damage_magic;
@@ -268,10 +241,12 @@ int ERBuildOptimizer::Validate(const int min_max[][2]) const {
   int result = CALC_PROCEED;
 
   int min_attainable_level =
-	  min_max[0][0] + min_max[1][0] + min_max[2][0] + min_max[3][0] + min_max[4][0] + optimal_character.vigor + optimal_character.mind + optimal_character.endurance - LEVEL_OFFSET;
+	  min_max[0][0] + min_max[1][0] + min_max[2][0] + min_max[3][0] + min_max[4][0] + optimal_character.vigor + optimal_character.mind
+		  + optimal_character.endurance - LEVEL_OFFSET;
 
   int max_attainable_level =
-	  min_max[0][1] + min_max[1][1] + min_max[2][1] + min_max[3][1] + min_max[4][1] + optimal_character.vigor + optimal_character.mind + optimal_character.endurance - LEVEL_OFFSET;
+	  min_max[0][1] + min_max[1][1] + min_max[2][1] + min_max[3][1] + min_max[4][1] + optimal_character.vigor + optimal_character.mind
+		  + optimal_character.endurance - LEVEL_OFFSET;
 
   if (min_attainable_level > target_level) {
 	// Minimum possibe attribute combo is too high for level.Decrease V, M, E, or raise Level
@@ -285,7 +260,10 @@ int ERBuildOptimizer::Validate(const int min_max[][2]) const {
 }
 
 // Python typed Constructor
-ERBuildOptimizer::ERBuildOptimizer(const int target_level, const bool is_two_handing, const py::dict &character, const int optimization_type) {
+ERBuildOptimizer::ERBuildOptimizer(const int target_level,
+								   const bool is_two_handing,
+								   const py::dict &character,
+								   const int optimization_type) {
   this->target_level = target_level;
   this->is_two_handing = is_two_handing;
   this->optimization_type = optimization_type;
@@ -315,7 +293,10 @@ ERBuildOptimizer::ERBuildOptimizer(const int target_level, const bool is_two_han
 }
 
 // Non-python typed Constructor
-ERBuildOptimizer::ERBuildOptimizer(const int target_level, const bool is_two_handing, const Tarnished &character, const int optimization_type) {
+ERBuildOptimizer::ERBuildOptimizer(const int target_level,
+								   const bool is_two_handing,
+								   const Tarnished &character,
+								   const int optimization_type) {
   this->target_level = target_level;
   this->is_two_handing = is_two_handing;
   this->optimization_type = optimization_type;
@@ -685,21 +666,24 @@ void ERBuildOptimizer::Optimize() {
 
   size_t solution_count = solution_sets.size();
 
-  std::function<void(int, int, int, int, int, ERBuildOptimizer &)> eval_func = EvaluateByAR;
+  std::function<void(AttributeTuple &, ERBuildOptimizer &)> eval_func = EvaluateByAR;
 
   if (optimization_type == OPTIMIZE_SKILL) {
 	std::function<void(int, int, int, int, int, ERBuildOptimizer &)> eval_func = EvaluateBySkillAR;
   }
 
+  AttributeTuple attribute_tuple;
+
   // Evaluate all the solution sets and their permutations.
   for (size_t i = 0; i < solution_count; i++) {
+	attribute_tuple.strength = (int)((solution_sets[i] & STR_MASK) >> 32);
+	attribute_tuple.dexterity = (int)((solution_sets[i] & DEX_MASK) >> 24);
+	attribute_tuple.intelligence = (int)((solution_sets[i] & INT_MASK) >> 16);
+	attribute_tuple.faith = (int)((solution_sets[i] & FAI_MASK) >> 8);
+	attribute_tuple.arcane = (int)(solution_sets[i] & ARC_MASK);
+
 	// Depending, evaluation criteria, maybe come up with something a bit more elegant.
-	eval_func((int)((solution_sets[i] & STR_MASK) >> 32),
-			  (int)((solution_sets[i] & DEX_MASK) >> 24),
-			  (int)((solution_sets[i] & INT_MASK) >> 16),
-			  (int)((solution_sets[i] & FAI_MASK) >> 8),
-			  (int)(solution_sets[i] & ARC_MASK),
-			  *this);
+	eval_func(attribute_tuple, *this);
   }
 
   // Calculate passive status effect values.
@@ -715,13 +699,35 @@ void ERBuildOptimizer::Optimize() {
 }
 
 // Evaluate a solution set.
-void ERBuildOptimizer::EvaluateByAR(const int s, const int d, const int i, const int f, const int a, ERBuildOptimizer &er) {
+
+void ERBuildOptimizer::EvaluateByAR(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
   // Calculate mainhand damages
-  double mh_physical_damage = CalculateCorrectedDamage(er.mh_weapon, s, d, i, f, a, DAMAGE_TYPE::PHYSICAL, er.mh_weapon.damage_physical * er.mh_weapon.damage_pct_physical, er.is_two_handing);
-  double mh_magic_damage = CalculateCorrectedDamage(er.mh_weapon, s, d, i, f, a, DAMAGE_TYPE::MAGIC, er.mh_weapon.damage_magic * er.mh_weapon.damage_pct_magic, er.is_two_handing);
-  double mh_fire_damage = CalculateCorrectedDamage(er.mh_weapon, s, d, i, f, a, DAMAGE_TYPE::FIRE, er.mh_weapon.damage_fire * er.mh_weapon.damage_pct_fire, er.is_two_handing);
-  double mh_lightning_damage = CalculateCorrectedDamage(er.mh_weapon, s, d, i, f, a, DAMAGE_TYPE::LIGHTNING, er.mh_weapon.damage_lightning * er.mh_weapon.damage_pct_lightning, er.is_two_handing);
-  double mh_holy_damage = CalculateCorrectedDamage(er.mh_weapon, s, d, i, f, a, DAMAGE_TYPE::HOLY, er.mh_weapon.damage_holy * er.mh_weapon.damage_pct_holy, er.is_two_handing);
+  double mh_physical_damage = CalculateCorrectedDamage(er.mh_weapon,
+													   attribute_tuple,
+													   DAMAGE_TYPE::PHYSICAL,
+													   er.mh_weapon.damage_physical * er.mh_weapon.damage_pct_physical,
+													   er.is_two_handing);
+  double mh_magic_damage = CalculateCorrectedDamage(er.mh_weapon,
+													attribute_tuple,
+													DAMAGE_TYPE::MAGIC,
+													er.mh_weapon.damage_magic * er.mh_weapon.damage_pct_magic,
+													er.is_two_handing);
+  double mh_fire_damage = CalculateCorrectedDamage(er.mh_weapon,
+												   attribute_tuple,
+												   DAMAGE_TYPE::FIRE,
+												   er.mh_weapon.damage_fire * er.mh_weapon.damage_pct_fire,
+												   er.is_two_handing);
+  double mh_lightning_damage = CalculateCorrectedDamage(er.mh_weapon,
+														attribute_tuple,
+														DAMAGE_TYPE::LIGHTNING,
+														er.mh_weapon.damage_lightning * er.mh_weapon.damage_pct_lightning,
+														er.is_two_handing);
+  double mh_holy_damage = CalculateCorrectedDamage(er.mh_weapon,
+												   attribute_tuple,
+												   DAMAGE_TYPE::HOLY,
+												   er.mh_weapon.damage_holy * er.mh_weapon.damage_pct_holy,
+												   er.is_two_handing);
+
   double mh_total_damage = mh_physical_damage + mh_magic_damage + mh_fire_damage + mh_lightning_damage + mh_holy_damage;
   double total_damage = mh_total_damage;
 
@@ -734,11 +740,32 @@ void ERBuildOptimizer::EvaluateByAR(const int s, const int d, const int i, const
 
   // Add off-hand damages
   if (er.dual_wield) {
-	oh_physical_damage = CalculateCorrectedDamage(er.oh_weapon, s, d, i, f, a, DAMAGE_TYPE::PHYSICAL, er.mh_weapon.damage_physical * er.mh_weapon.damage_pct_physical, er.is_two_handing);
-	oh_magic_damage = CalculateCorrectedDamage(er.oh_weapon, s, d, i, f, a, DAMAGE_TYPE::MAGIC, er.mh_weapon.damage_magic * er.mh_weapon.damage_pct_magic, er.is_two_handing);
-	oh_fire_damage = CalculateCorrectedDamage(er.oh_weapon, s, d, i, f, a, DAMAGE_TYPE::FIRE, er.mh_weapon.damage_fire * er.mh_weapon.damage_pct_fire, er.is_two_handing);
-	oh_lightning_damage = CalculateCorrectedDamage(er.oh_weapon, s, d, i, f, a, DAMAGE_TYPE::LIGHTNING, er.mh_weapon.damage_lightning * er.mh_weapon.damage_pct_lightning, er.is_two_handing);
-	oh_holy_damage = CalculateCorrectedDamage(er.oh_weapon, s, d, i, f, a, DAMAGE_TYPE::HOLY, er.mh_weapon.damage_holy * er.mh_weapon.damage_pct_holy, er.is_two_handing);
+	oh_physical_damage = CalculateCorrectedDamage(er.oh_weapon,
+												  attribute_tuple,
+												  DAMAGE_TYPE::PHYSICAL,
+												  er.mh_weapon.damage_physical * er.mh_weapon.damage_pct_physical,
+												  er.is_two_handing);
+	oh_magic_damage = CalculateCorrectedDamage(er.oh_weapon,
+											   attribute_tuple,
+											   DAMAGE_TYPE::MAGIC,
+											   er.mh_weapon.damage_magic * er.mh_weapon.damage_pct_magic,
+											   er.is_two_handing);
+	oh_fire_damage = CalculateCorrectedDamage(er.oh_weapon,
+											  attribute_tuple,
+											  DAMAGE_TYPE::FIRE,
+											  er.mh_weapon.damage_fire * er.mh_weapon.damage_pct_fire,
+											  er.is_two_handing);
+	oh_lightning_damage = CalculateCorrectedDamage(er.oh_weapon,
+												   attribute_tuple,
+												   DAMAGE_TYPE::LIGHTNING,
+												   er.mh_weapon.damage_lightning * er.mh_weapon.damage_pct_lightning,
+												   er.is_two_handing);
+	oh_holy_damage = CalculateCorrectedDamage(er.oh_weapon,
+											  attribute_tuple,
+											  DAMAGE_TYPE::HOLY,
+											  er.mh_weapon.damage_holy * er.mh_weapon.damage_pct_holy,
+											  er.is_two_handing);
+
 	oh_total_damage = oh_physical_damage + oh_magic_damage + oh_fire_damage + oh_lightning_damage + oh_holy_damage;
 	total_damage += oh_total_damage;
   }
@@ -764,208 +791,23 @@ void ERBuildOptimizer::EvaluateByAR(const int s, const int d, const int i, const
 	  er.oh_weapon.max_total_dmg = oh_total_damage;
 	}
 
-	er.optimal_character.opt_strength = s;
-	er.optimal_character.opt_dexterity = d;
-	er.optimal_character.opt_intelligence = i;
-	er.optimal_character.opt_faith = f;
-	er.optimal_character.opt_arcane = a;
+	er.optimal_character.opt_strength = attribute_tuple.strength;
+	er.optimal_character.opt_dexterity = attribute_tuple.dexterity;
+	er.optimal_character.opt_intelligence = attribute_tuple.intelligence;
+	er.optimal_character.opt_faith = attribute_tuple.faith;
+	er.optimal_character.opt_arcane = attribute_tuple.arcane;
 
 	// Indicate that at least one solution set was found.
 	er.calculation_result = CALC_SUCCESS;
   }
 }
 
-// Calculate corrected damage
-double ERBuildOptimizer::CalculateCorrectedDamage(const Weapon &selected_weapon,
-												  const int s,
-												  const int d,
-												  const int i,
-												  const int f,
-												  const int a,
-												  const DAMAGE_TYPE damage_type,
-												  const double base_damage,
-												  const bool is_two_handing) {
-  //double base_damage = 0.0;
-
-  int mask = 0;
-  int stat_max[5]{};
-  int grow[5]{};
-  double adj_pt_grow[5]{};
-
-  // Weapon scaling by attribute
-  int correction[5]{selected_weapon.correction_str, selected_weapon.correction_dex, selected_weapon.correction_int, selected_weapon.correction_fai, selected_weapon.correction_arc};
-
-  // Reinforcement
-  double correction_pct[5]
-	  {selected_weapon.correction_pct_str, selected_weapon.correction_pct_dex, selected_weapon.correction_pct_int, selected_weapon.correction_pct_fai, selected_weapon.correction_pct_arc};
-
-  switch (damage_type) {
-	case DAMAGE_TYPE::PHYSICAL:
-	  //base_damage = selected_weapon.damage_physical * selected_weapon.damage_pct_physical;        // base * reinforcement
-
-	  // Masks
-	  mask = PH_STR;
-
-	  // Attack Correction Values
-	  stat_max[0] = selected_weapon.physical_stat_max_0;
-	  stat_max[1] = selected_weapon.physical_stat_max_1;
-	  stat_max[2] = selected_weapon.physical_stat_max_2;
-	  stat_max[3] = selected_weapon.physical_stat_max_3;
-	  stat_max[4] = selected_weapon.physical_stat_max_4;
-	  grow[0] = selected_weapon.physical_grow_0;
-	  grow[1] = selected_weapon.physical_grow_1;
-	  grow[2] = selected_weapon.physical_grow_2;
-	  grow[3] = selected_weapon.physical_grow_3;
-	  grow[4] = selected_weapon.physical_grow_4;
-	  adj_pt_grow[0] = selected_weapon.physical_adjustment_pt_grow_0;
-	  adj_pt_grow[1] = selected_weapon.physical_adjustment_pt_grow_1;
-	  adj_pt_grow[2] = selected_weapon.physical_adjustment_pt_grow_2;
-	  adj_pt_grow[3] = selected_weapon.physical_adjustment_pt_grow_3;
-	  adj_pt_grow[4] = selected_weapon.physical_adjustment_pt_grow_4;
-	  break;
-	case DAMAGE_TYPE::MAGIC:
-	  //base_damage = selected_weapon.damage_magic * selected_weapon.damage_pct_magic;
-
-	  // Masks
-	  mask = MA_STR;
-
-	  // Attack Correction Values
-	  stat_max[0] = selected_weapon.magic_stat_max_0;
-	  stat_max[1] = selected_weapon.magic_stat_max_1;
-	  stat_max[2] = selected_weapon.magic_stat_max_2;
-	  stat_max[3] = selected_weapon.magic_stat_max_3;
-	  stat_max[4] = selected_weapon.magic_stat_max_4;
-	  grow[0] = selected_weapon.magic_grow_0;
-	  grow[1] = selected_weapon.magic_grow_1;
-	  grow[2] = selected_weapon.magic_grow_2;
-	  grow[3] = selected_weapon.magic_grow_3;
-	  grow[4] = selected_weapon.magic_grow_4;
-	  adj_pt_grow[0] = selected_weapon.magic_adjustment_pt_grow_0;
-	  adj_pt_grow[1] = selected_weapon.magic_adjustment_pt_grow_1;
-	  adj_pt_grow[2] = selected_weapon.magic_adjustment_pt_grow_2;
-	  adj_pt_grow[3] = selected_weapon.magic_adjustment_pt_grow_3;
-	  adj_pt_grow[4] = selected_weapon.magic_adjustment_pt_grow_4;
-
-	  break;
-	case DAMAGE_TYPE::FIRE:
-	  //base_damage = selected_weapon.damage_fire * selected_weapon.damage_pct_fire;        // base * reinforcement
-
-	  // Masks
-	  mask = FI_STR;
-
-	  // Attack Correction Values
-	  stat_max[0] = selected_weapon.fire_stat_max_0;
-	  stat_max[1] = selected_weapon.fire_stat_max_1;
-	  stat_max[2] = selected_weapon.fire_stat_max_2;
-	  stat_max[3] = selected_weapon.fire_stat_max_3;
-	  stat_max[4] = selected_weapon.fire_stat_max_4;
-	  grow[0] = selected_weapon.fire_grow_0;
-	  grow[1] = selected_weapon.fire_grow_1;
-	  grow[2] = selected_weapon.fire_grow_2;
-	  grow[3] = selected_weapon.fire_grow_3;
-	  grow[4] = selected_weapon.fire_grow_4;
-	  adj_pt_grow[0] = selected_weapon.fire_adjustment_pt_grow_0;
-	  adj_pt_grow[1] = selected_weapon.fire_adjustment_pt_grow_1;
-	  adj_pt_grow[2] = selected_weapon.fire_adjustment_pt_grow_2;
-	  adj_pt_grow[3] = selected_weapon.fire_adjustment_pt_grow_3;
-	  adj_pt_grow[4] = selected_weapon.fire_adjustment_pt_grow_4;
-
-	  break;
-	case DAMAGE_TYPE::LIGHTNING:
-	  //base_damage = selected_weapon.damage_lightning * selected_weapon.damage_pct_lightning;  // base * reinforcement
-
-	  // Masks
-
-	  mask = LI_STR;
-
-	  // Attack Correction Values
-	  stat_max[0] = selected_weapon.lightning_stat_max_0;
-	  stat_max[1] = selected_weapon.lightning_stat_max_1;
-	  stat_max[2] = selected_weapon.lightning_stat_max_2;
-	  stat_max[3] = selected_weapon.lightning_stat_max_3;
-	  stat_max[4] = selected_weapon.lightning_stat_max_4;
-	  grow[0] = selected_weapon.lightning_grow_0;
-	  grow[1] = selected_weapon.lightning_grow_1;
-	  grow[2] = selected_weapon.lightning_grow_2;
-	  grow[3] = selected_weapon.lightning_grow_3;
-	  grow[4] = selected_weapon.lightning_grow_4;
-	  adj_pt_grow[0] = selected_weapon.lightning_adjustment_pt_grow_0;
-	  adj_pt_grow[1] = selected_weapon.lightning_adjustment_pt_grow_1;
-	  adj_pt_grow[2] = selected_weapon.lightning_adjustment_pt_grow_2;
-	  adj_pt_grow[3] = selected_weapon.lightning_adjustment_pt_grow_3;
-	  adj_pt_grow[4] = selected_weapon.lightning_adjustment_pt_grow_4;
-
-	  break;
-	default:
-	  //base_damage = selected_weapon.damage_holy * selected_weapon.damage_pct_holy;        // base * reinforcement
-
-	  // Masks
-	  mask = HO_STR;
-
-	  // Attack Correction Values
-	  stat_max[0] = selected_weapon.holy_stat_max_0;
-	  stat_max[1] = selected_weapon.holy_stat_max_1;
-	  stat_max[2] = selected_weapon.holy_stat_max_2;
-	  stat_max[3] = selected_weapon.holy_stat_max_3;
-	  stat_max[4] = selected_weapon.holy_stat_max_4;
-	  grow[0] = selected_weapon.holy_grow_0;
-	  grow[1] = selected_weapon.holy_grow_1;
-	  grow[2] = selected_weapon.holy_grow_2;
-	  grow[3] = selected_weapon.holy_grow_3;
-	  grow[4] = selected_weapon.holy_grow_4;
-	  adj_pt_grow[0] = selected_weapon.holy_adjustment_pt_grow_0;
-	  adj_pt_grow[1] = selected_weapon.holy_adjustment_pt_grow_1;
-	  adj_pt_grow[2] = selected_weapon.holy_adjustment_pt_grow_2;
-	  adj_pt_grow[3] = selected_weapon.holy_adjustment_pt_grow_3;
-	  adj_pt_grow[4] = selected_weapon.holy_adjustment_pt_grow_4;
-
-	  break;
-  }
-
-  double strength = s;
-
-  // What if we... two handed?
-  //        ---> <---
-  if (is_two_handing) {
-	strength *= 1.5;
-  }
-
-  double corrected_damage = base_damage;
-
-  // Go through each attribute for the damage type being evaluated.
-
-  int aec_bitmask = selected_weapon.attack_element_correct_bitmask;
-
-  // Strength
-  if (aec_bitmask & mask) {
-	corrected_damage += base_damage * correction[0] * correction_pct[0] * CalculateCorrectFn(strength, stat_max, grow, adj_pt_grow) / 10000.0;
-  }
-
-  // Dexterity
-  if (aec_bitmask & mask >> 1) {
-	corrected_damage += base_damage * correction[1] * correction_pct[1] * CalculateCorrectFn(d, stat_max, grow, adj_pt_grow) / 10000.0;
-  }
-
-  // Intelligence
-  if (aec_bitmask & mask >> 2) {
-	corrected_damage += base_damage * correction[2] * correction_pct[2] * CalculateCorrectFn(i, stat_max, grow, adj_pt_grow) / 10000.0;
-  }
-
-  // Faith
-  if (aec_bitmask & mask >> 3) {
-	corrected_damage += base_damage * correction[3] * correction_pct[3] * CalculateCorrectFn(f, stat_max, grow, adj_pt_grow) / 10000.0;
-  }
-
-  // Arcane
-  if (aec_bitmask & mask >> 4) {
-	corrected_damage += base_damage * correction[4] * correction_pct[4] * CalculateCorrectFn(a, stat_max, grow, adj_pt_grow) / 10000.0;
-  }
-
-  return corrected_damage;
-}
-
 // Determine which values to use for correction function
-inline double ERBuildOptimizer::CalculateCorrectFn(const double attribute, const int stat_max[], const int grow[], const double adj_pt_grow[]) {
+inline double ERBuildOptimizer::CalculateCorrectFn(const double attribute,
+												   const int stat_max[],
+												   const int grow[],
+												   const double adj_pt_grow[]) {
+
   // IF(B$2 > 80, ADD(90, MULTIPLY(20, DIVIDE(B$2 - 80, 70))),
   // IF(B$2 > 60, ADD(75, MULTIPLY(15, DIVIDE(B$2 - 60, 20))),
   // IF(B$2 > 18, ADD(25, MULTIPLY(50, MINUS(1, POW(MINUS(1, DIVIDE(B$2 - 18, 42)), 1.2)))),
@@ -983,7 +825,12 @@ inline double ERBuildOptimizer::CalculateCorrectFn(const double attribute, const
 }
 
 // Inline portion of calc correction function. Separated out for readability.
-inline double ERBuildOptimizer::CalcCorrectFnInner(const double attribute, const int stat_max, const int stat_max_n, const int grow, const int grow_n, const double adj_grow) {
+inline double ERBuildOptimizer::CalcCorrectFnInner(const double attribute,
+												   const int stat_max,
+												   const int stat_max_n,
+												   const int grow,
+												   const int grow_n,
+												   const double adj_grow) {
   if (adj_grow < 0)
 	return grow + (grow_n - grow) * (1 - pow(1 - (attribute - stat_max) / (double)(stat_max_n - stat_max), abs(adj_grow)));
   else
@@ -1040,6 +887,187 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 
 void ERBuildOptimizer::EvaluateBySkillAR(const int s, const int d, const int i, const int f, const int a, ERBuildOptimizer &er) {
   // TODO
+}
+
+// Calculate corrected damage
+double ERBuildOptimizer::CalculateCorrectedDamage(const Weapon &selected_weapon,
+												  const AttributeTuple &attribute_tuple,
+												  const DAMAGE_TYPE damage_type,
+												  const double base_damage,
+												  const bool is_two_handing) {
+  int mask = 0;
+  int stat_max[5]{};
+  int grow[5]{};
+  double adj_pt_grow[5]{};
+
+  // Weapon scaling by attribute
+  int correction[5]
+	  {selected_weapon.correction_str, selected_weapon.correction_dex, selected_weapon.correction_int, selected_weapon.correction_fai,
+	   selected_weapon.correction_arc};
+
+  // Reinforcement
+  double correction_pct[5]{selected_weapon.correction_pct_str, selected_weapon.correction_pct_dex, selected_weapon.correction_pct_int,
+						   selected_weapon.correction_pct_fai, selected_weapon.correction_pct_arc};
+
+  switch (damage_type) {
+	case DAMAGE_TYPE::PHYSICAL:
+	  // Masks
+	  mask = PH_STR;
+
+	  // Attack Correction Values
+	  stat_max[0] = selected_weapon.physical_stat_max_0;
+	  stat_max[1] = selected_weapon.physical_stat_max_1;
+	  stat_max[2] = selected_weapon.physical_stat_max_2;
+	  stat_max[3] = selected_weapon.physical_stat_max_3;
+	  stat_max[4] = selected_weapon.physical_stat_max_4;
+	  grow[0] = selected_weapon.physical_grow_0;
+	  grow[1] = selected_weapon.physical_grow_1;
+	  grow[2] = selected_weapon.physical_grow_2;
+	  grow[3] = selected_weapon.physical_grow_3;
+	  grow[4] = selected_weapon.physical_grow_4;
+	  adj_pt_grow[0] = selected_weapon.physical_adjustment_pt_grow_0;
+	  adj_pt_grow[1] = selected_weapon.physical_adjustment_pt_grow_1;
+	  adj_pt_grow[2] = selected_weapon.physical_adjustment_pt_grow_2;
+	  adj_pt_grow[3] = selected_weapon.physical_adjustment_pt_grow_3;
+	  adj_pt_grow[4] = selected_weapon.physical_adjustment_pt_grow_4;
+	  break;
+	case DAMAGE_TYPE::MAGIC:
+	  // Masks
+	  mask = MA_STR;
+
+	  // Attack Correction Values
+	  stat_max[0] = selected_weapon.magic_stat_max_0;
+	  stat_max[1] = selected_weapon.magic_stat_max_1;
+	  stat_max[2] = selected_weapon.magic_stat_max_2;
+	  stat_max[3] = selected_weapon.magic_stat_max_3;
+	  stat_max[4] = selected_weapon.magic_stat_max_4;
+	  grow[0] = selected_weapon.magic_grow_0;
+	  grow[1] = selected_weapon.magic_grow_1;
+	  grow[2] = selected_weapon.magic_grow_2;
+	  grow[3] = selected_weapon.magic_grow_3;
+	  grow[4] = selected_weapon.magic_grow_4;
+	  adj_pt_grow[0] = selected_weapon.magic_adjustment_pt_grow_0;
+	  adj_pt_grow[1] = selected_weapon.magic_adjustment_pt_grow_1;
+	  adj_pt_grow[2] = selected_weapon.magic_adjustment_pt_grow_2;
+	  adj_pt_grow[3] = selected_weapon.magic_adjustment_pt_grow_3;
+	  adj_pt_grow[4] = selected_weapon.magic_adjustment_pt_grow_4;
+
+	  break;
+	case DAMAGE_TYPE::FIRE:
+	  // Masks
+	  mask = FI_STR;
+
+	  // Attack Correction Values
+	  stat_max[0] = selected_weapon.fire_stat_max_0;
+	  stat_max[1] = selected_weapon.fire_stat_max_1;
+	  stat_max[2] = selected_weapon.fire_stat_max_2;
+	  stat_max[3] = selected_weapon.fire_stat_max_3;
+	  stat_max[4] = selected_weapon.fire_stat_max_4;
+	  grow[0] = selected_weapon.fire_grow_0;
+	  grow[1] = selected_weapon.fire_grow_1;
+	  grow[2] = selected_weapon.fire_grow_2;
+	  grow[3] = selected_weapon.fire_grow_3;
+	  grow[4] = selected_weapon.fire_grow_4;
+	  adj_pt_grow[0] = selected_weapon.fire_adjustment_pt_grow_0;
+	  adj_pt_grow[1] = selected_weapon.fire_adjustment_pt_grow_1;
+	  adj_pt_grow[2] = selected_weapon.fire_adjustment_pt_grow_2;
+	  adj_pt_grow[3] = selected_weapon.fire_adjustment_pt_grow_3;
+	  adj_pt_grow[4] = selected_weapon.fire_adjustment_pt_grow_4;
+
+	  break;
+	case DAMAGE_TYPE::LIGHTNING:
+	  // Masks
+	  mask = LI_STR;
+
+	  // Attack Correction Values
+	  stat_max[0] = selected_weapon.lightning_stat_max_0;
+	  stat_max[1] = selected_weapon.lightning_stat_max_1;
+	  stat_max[2] = selected_weapon.lightning_stat_max_2;
+	  stat_max[3] = selected_weapon.lightning_stat_max_3;
+	  stat_max[4] = selected_weapon.lightning_stat_max_4;
+	  grow[0] = selected_weapon.lightning_grow_0;
+	  grow[1] = selected_weapon.lightning_grow_1;
+	  grow[2] = selected_weapon.lightning_grow_2;
+	  grow[3] = selected_weapon.lightning_grow_3;
+	  grow[4] = selected_weapon.lightning_grow_4;
+	  adj_pt_grow[0] = selected_weapon.lightning_adjustment_pt_grow_0;
+	  adj_pt_grow[1] = selected_weapon.lightning_adjustment_pt_grow_1;
+	  adj_pt_grow[2] = selected_weapon.lightning_adjustment_pt_grow_2;
+	  adj_pt_grow[3] = selected_weapon.lightning_adjustment_pt_grow_3;
+	  adj_pt_grow[4] = selected_weapon.lightning_adjustment_pt_grow_4;
+
+	  break;
+	default:
+	  // Masks
+	  mask = HO_STR;
+
+	  // Attack Correction Values
+	  stat_max[0] = selected_weapon.holy_stat_max_0;
+	  stat_max[1] = selected_weapon.holy_stat_max_1;
+	  stat_max[2] = selected_weapon.holy_stat_max_2;
+	  stat_max[3] = selected_weapon.holy_stat_max_3;
+	  stat_max[4] = selected_weapon.holy_stat_max_4;
+	  grow[0] = selected_weapon.holy_grow_0;
+	  grow[1] = selected_weapon.holy_grow_1;
+	  grow[2] = selected_weapon.holy_grow_2;
+	  grow[3] = selected_weapon.holy_grow_3;
+	  grow[4] = selected_weapon.holy_grow_4;
+	  adj_pt_grow[0] = selected_weapon.holy_adjustment_pt_grow_0;
+	  adj_pt_grow[1] = selected_weapon.holy_adjustment_pt_grow_1;
+	  adj_pt_grow[2] = selected_weapon.holy_adjustment_pt_grow_2;
+	  adj_pt_grow[3] = selected_weapon.holy_adjustment_pt_grow_3;
+	  adj_pt_grow[4] = selected_weapon.holy_adjustment_pt_grow_4;
+
+	  break;
+  }
+
+  double strength = attribute_tuple.strength;
+
+  // What if we... two handed?
+  //        ---> <---
+  if (is_two_handing) {
+	strength *= 1.5;
+  }
+
+  double corrected_damage = base_damage;
+
+  // Go through each attribute for the damage type being evaluated.
+
+  int aec_bitmask = selected_weapon.attack_element_correct_bitmask;
+
+  // Strength
+  if (aec_bitmask & mask) {
+	corrected_damage +=
+		base_damage * correction[0] * correction_pct[0] * CalculateCorrectFn(strength, stat_max, grow, adj_pt_grow) / 10000.0;
+  }
+
+  // Dexterity
+  if (aec_bitmask & mask >> 1) {
+	corrected_damage +=
+		base_damage * correction[1] * correction_pct[1] * CalculateCorrectFn(attribute_tuple.dexterity, stat_max, grow, adj_pt_grow)
+			/ 10000.0;
+  }
+
+  // Intelligence
+  if (aec_bitmask & mask >> 2) {
+	corrected_damage +=
+		base_damage * correction[2] * correction_pct[2] * CalculateCorrectFn(attribute_tuple.intelligence, stat_max, grow, adj_pt_grow)
+			/ 10000.0;
+  }
+
+  // Faith
+  if (aec_bitmask & mask >> 3) {
+	corrected_damage +=
+		base_damage * correction[3] * correction_pct[3] * CalculateCorrectFn(attribute_tuple.faith, stat_max, grow, adj_pt_grow) / 10000.0;
+  }
+
+  // Arcane
+  if (aec_bitmask & mask >> 4) {
+	corrected_damage +=
+		base_damage * correction[4] * correction_pct[4] * CalculateCorrectFn(attribute_tuple.arcane, stat_max, grow, adj_pt_grow) / 10000.0;
+  }
+
+  return corrected_damage;
 }
 
 
