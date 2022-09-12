@@ -85,7 +85,10 @@ class ERBuildOptimizer {
   static int const CALC_FAIL_LEVEL_HIGH = 1;
   static int const CALC_FAIL_LEVEL_LOW = 2;
 
-  bool dual_wield = false;
+  //bool dual_wield = false;
+  bool using_main_hand = false;
+  bool using_off_hand = false;
+
   int target_level = 0;
   bool is_two_handing = false;
   int correct_bitmask = 0;
@@ -100,7 +103,7 @@ class ERBuildOptimizer {
 
   static void EvaluateByAR(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
 
-  static void EvaluateBySkillAR(const int s, const int d, const int i, const int f, const int a, ERBuildOptimizer &er);
+  static void EvaluateBySkillAR(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
 
   int Validate(const int min_max[][2]) const;
 

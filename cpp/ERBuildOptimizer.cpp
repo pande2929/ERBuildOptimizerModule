@@ -305,230 +305,231 @@ ERBuildOptimizer::ERBuildOptimizer(const int target_level,
 
 // Set weapon main hand and off hand weapons
 void ERBuildOptimizer::SetWeapon(const bool main_hand, const py::dict &w) {
-  Weapon weap;
+  Weapon weapon;
 
   // convert from dict to weapon
-  weap.id = stoi(py::str(w["id"]));
-  weap.name = string(py::str(w["name"]));
-  weap.weapon_type = string(py::str(w["weapon_type"]));
-  weap.origin_weapon = string(py::str(w["origin_weapon"]));
+  weapon.id = stoi(py::str(w["id"]));
+  weapon.name = string(py::str(w["name"]));
+  weapon.weapon_type = string(py::str(w["weapon_type"]));
+  weapon.origin_weapon = string(py::str(w["origin_weapon"]));
 
   // Base Damage
-  weap.damage_physical = stoi(py::str(w["damage_physical"]));
-  weap.damage_magic = stoi(py::str(w["damage_magic"]));
-  weap.damage_fire = stoi(py::str(w["damage_fire"]));
-  weap.damage_lightning = stoi(py::str(w["damage_lightning"]));
-  weap.damage_holy = stoi(py::str(w["damage_holy"]));
+  weapon.damage_physical = stoi(py::str(w["damage_physical"]));
+  weapon.damage_magic = stoi(py::str(w["damage_magic"]));
+  weapon.damage_fire = stoi(py::str(w["damage_fire"]));
+  weapon.damage_lightning = stoi(py::str(w["damage_lightning"]));
+  weapon.damage_holy = stoi(py::str(w["damage_holy"]));
 
   // Required Stats
-  weap.required_str = stoi(py::str(w["required_str"]));
-  weap.required_dex = stoi(py::str(w["required_dex"]));
-  weap.required_int = stoi(py::str(w["required_int"]));
-  weap.required_fai = stoi(py::str(w["required_fai"]));
-  weap.required_arc = stoi(py::str(w["required_arc"]));
+  weapon.required_str = stoi(py::str(w["required_str"]));
+  weapon.required_dex = stoi(py::str(w["required_dex"]));
+  weapon.required_int = stoi(py::str(w["required_int"]));
+  weapon.required_fai = stoi(py::str(w["required_fai"]));
+  weapon.required_arc = stoi(py::str(w["required_arc"]));
 
   // Base Correction Values
-  weap.correction_str = stoi(py::str(w["correction_str"]));
-  weap.correction_dex = stoi(py::str(w["correction_dex"]));
-  weap.correction_int = stoi(py::str(w["correction_int"]));
-  weap.correction_fai = stoi(py::str(w["correction_fai"]));
-  weap.correction_arc = stoi(py::str(w["correction_arc"]));
+  weapon.correction_str = stoi(py::str(w["correction_str"]));
+  weapon.correction_dex = stoi(py::str(w["correction_dex"]));
+  weapon.correction_int = stoi(py::str(w["correction_int"]));
+  weapon.correction_fai = stoi(py::str(w["correction_fai"]));
+  weapon.correction_arc = stoi(py::str(w["correction_arc"]));
 
   // Bitmask
-  weap.attack_element_correct_bitmask_str = string(py::str(w["attack_element_correct_bitmask_str"]));
+  weapon.attack_element_correct_bitmask_str = string(py::str(w["attack_element_correct_bitmask_str"]));
 
   // Convert the string attack element correct bitmask into an integer one
-  weap.attack_element_correct_bitmask = ConvertBitMask(weap.attack_element_correct_bitmask_str);
+  weapon.attack_element_correct_bitmask = ConvertBitMask(weapon.attack_element_correct_bitmask_str);
 
   // Reinforcement Values
-  weap.damage_pct_physical = stod(py::str(w["damage_pct_physical"]));
-  weap.damage_pct_magic = stod(py::str(w["damage_pct_magic"]));
-  weap.damage_pct_fire = stod(py::str(w["damage_pct_fire"]));
-  weap.damage_pct_lightning = stod(py::str(w["damage_pct_lightning"]));
-  weap.damage_pct_holy = stod(py::str(w["damage_pct_holy"]));
-  weap.damage_pct_stamina = stod(py::str(w["damage_pct_stamina"]));
-  weap.damage_pct_poise = stod(py::str(w["damage_pct_poise"]));
-  weap.correction_pct_str = stod(py::str(w["correction_pct_str"]));
-  weap.correction_pct_dex = stod(py::str(w["correction_pct_dex"]));
-  weap.correction_pct_int = stod(py::str(w["correction_pct_int"]));
-  weap.correction_pct_fai = stod(py::str(w["correction_pct_fai"]));
-  weap.correction_pct_arc = stod(py::str(w["correction_pct_arc"]));
-  weap.base_damage_pct_overall = stod(py::str(w["base_damage_pct_overall"]));
+  weapon.damage_pct_physical = stod(py::str(w["damage_pct_physical"]));
+  weapon.damage_pct_magic = stod(py::str(w["damage_pct_magic"]));
+  weapon.damage_pct_fire = stod(py::str(w["damage_pct_fire"]));
+  weapon.damage_pct_lightning = stod(py::str(w["damage_pct_lightning"]));
+  weapon.damage_pct_holy = stod(py::str(w["damage_pct_holy"]));
+  weapon.damage_pct_stamina = stod(py::str(w["damage_pct_stamina"]));
+  weapon.damage_pct_poise = stod(py::str(w["damage_pct_poise"]));
+  weapon.correction_pct_str = stod(py::str(w["correction_pct_str"]));
+  weapon.correction_pct_dex = stod(py::str(w["correction_pct_dex"]));
+  weapon.correction_pct_int = stod(py::str(w["correction_pct_int"]));
+  weapon.correction_pct_fai = stod(py::str(w["correction_pct_fai"]));
+  weapon.correction_pct_arc = stod(py::str(w["correction_pct_arc"]));
+  weapon.base_damage_pct_overall = stod(py::str(w["base_damage_pct_overall"]));
 
   // Calc Correct Values
 
   // Physical
-  weap.physical_calc_correct_id = stoi(py::str(w["physical_calc_correct_id"]));
-  weap.physical_stat_max_0 = stoi(py::str(w["physical_stat_max_0"]));
-  weap.physical_stat_max_1 = stoi(py::str(w["physical_stat_max_1"]));
-  weap.physical_stat_max_2 = stoi(py::str(w["physical_stat_max_2"]));
-  weap.physical_stat_max_3 = stoi(py::str(w["physical_stat_max_3"]));
-  weap.physical_stat_max_4 = stoi(py::str(w["physical_stat_max_4"]));
-  weap.physical_grow_0 = stoi(py::str(w["physical_grow_0"]));
-  weap.physical_grow_1 = stoi(py::str(w["physical_grow_1"]));
-  weap.physical_grow_2 = stoi(py::str(w["physical_grow_2"]));
-  weap.physical_grow_3 = stoi(py::str(w["physical_grow_3"]));
-  weap.physical_grow_4 = stoi(py::str(w["physical_grow_4"]));
-  weap.physical_adjustment_pt_grow_0 = stod(py::str(w["physical_adjustment_pt_grow_0"]));
-  weap.physical_adjustment_pt_grow_1 = stod(py::str(w["physical_adjustment_pt_grow_1"]));
-  weap.physical_adjustment_pt_grow_2 = stod(py::str(w["physical_adjustment_pt_grow_2"]));
-  weap.physical_adjustment_pt_grow_3 = stod(py::str(w["physical_adjustment_pt_grow_3"]));
-  weap.physical_adjustment_pt_grow_4 = stod(py::str(w["physical_adjustment_pt_grow_4"]));
+  weapon.physical_calc_correct_id = stoi(py::str(w["physical_calc_correct_id"]));
+  weapon.physical_stat_max_0 = stoi(py::str(w["physical_stat_max_0"]));
+  weapon.physical_stat_max_1 = stoi(py::str(w["physical_stat_max_1"]));
+  weapon.physical_stat_max_2 = stoi(py::str(w["physical_stat_max_2"]));
+  weapon.physical_stat_max_3 = stoi(py::str(w["physical_stat_max_3"]));
+  weapon.physical_stat_max_4 = stoi(py::str(w["physical_stat_max_4"]));
+  weapon.physical_grow_0 = stoi(py::str(w["physical_grow_0"]));
+  weapon.physical_grow_1 = stoi(py::str(w["physical_grow_1"]));
+  weapon.physical_grow_2 = stoi(py::str(w["physical_grow_2"]));
+  weapon.physical_grow_3 = stoi(py::str(w["physical_grow_3"]));
+  weapon.physical_grow_4 = stoi(py::str(w["physical_grow_4"]));
+  weapon.physical_adjustment_pt_grow_0 = stod(py::str(w["physical_adjustment_pt_grow_0"]));
+  weapon.physical_adjustment_pt_grow_1 = stod(py::str(w["physical_adjustment_pt_grow_1"]));
+  weapon.physical_adjustment_pt_grow_2 = stod(py::str(w["physical_adjustment_pt_grow_2"]));
+  weapon.physical_adjustment_pt_grow_3 = stod(py::str(w["physical_adjustment_pt_grow_3"]));
+  weapon.physical_adjustment_pt_grow_4 = stod(py::str(w["physical_adjustment_pt_grow_4"]));
 
   // Magic
-  weap.magic_calc_correct_id = stoi(py::str(w["magic_calc_correct_id"]));
-  weap.magic_stat_max_0 = stoi(py::str(w["magic_stat_max_0"]));
-  weap.magic_stat_max_1 = stoi(py::str(w["magic_stat_max_1"]));
-  weap.magic_stat_max_2 = stoi(py::str(w["magic_stat_max_2"]));
-  weap.magic_stat_max_3 = stoi(py::str(w["magic_stat_max_3"]));
-  weap.magic_stat_max_4 = stoi(py::str(w["magic_stat_max_4"]));
-  weap.magic_grow_0 = stoi(py::str(w["magic_grow_0"]));
-  weap.magic_grow_1 = stoi(py::str(w["magic_grow_1"]));
-  weap.magic_grow_2 = stoi(py::str(w["magic_grow_2"]));
-  weap.magic_grow_3 = stoi(py::str(w["magic_grow_3"]));
-  weap.magic_grow_4 = stoi(py::str(w["magic_grow_4"]));
-  weap.magic_adjustment_pt_grow_0 = stod(py::str(w["magic_adjustment_pt_grow_0"]));
-  weap.magic_adjustment_pt_grow_1 = stod(py::str(w["magic_adjustment_pt_grow_1"]));
-  weap.magic_adjustment_pt_grow_2 = stod(py::str(w["magic_adjustment_pt_grow_2"]));
-  weap.magic_adjustment_pt_grow_3 = stod(py::str(w["magic_adjustment_pt_grow_3"]));
-  weap.magic_adjustment_pt_grow_4 = stod(py::str(w["magic_adjustment_pt_grow_4"]));
+  weapon.magic_calc_correct_id = stoi(py::str(w["magic_calc_correct_id"]));
+  weapon.magic_stat_max_0 = stoi(py::str(w["magic_stat_max_0"]));
+  weapon.magic_stat_max_1 = stoi(py::str(w["magic_stat_max_1"]));
+  weapon.magic_stat_max_2 = stoi(py::str(w["magic_stat_max_2"]));
+  weapon.magic_stat_max_3 = stoi(py::str(w["magic_stat_max_3"]));
+  weapon.magic_stat_max_4 = stoi(py::str(w["magic_stat_max_4"]));
+  weapon.magic_grow_0 = stoi(py::str(w["magic_grow_0"]));
+  weapon.magic_grow_1 = stoi(py::str(w["magic_grow_1"]));
+  weapon.magic_grow_2 = stoi(py::str(w["magic_grow_2"]));
+  weapon.magic_grow_3 = stoi(py::str(w["magic_grow_3"]));
+  weapon.magic_grow_4 = stoi(py::str(w["magic_grow_4"]));
+  weapon.magic_adjustment_pt_grow_0 = stod(py::str(w["magic_adjustment_pt_grow_0"]));
+  weapon.magic_adjustment_pt_grow_1 = stod(py::str(w["magic_adjustment_pt_grow_1"]));
+  weapon.magic_adjustment_pt_grow_2 = stod(py::str(w["magic_adjustment_pt_grow_2"]));
+  weapon.magic_adjustment_pt_grow_3 = stod(py::str(w["magic_adjustment_pt_grow_3"]));
+  weapon.magic_adjustment_pt_grow_4 = stod(py::str(w["magic_adjustment_pt_grow_4"]));
 
   // Fire
-  weap.fire_calc_correct_id = stoi(py::str(w["fire_calc_correct_id"]));
-  weap.fire_stat_max_0 = stoi(py::str(w["fire_stat_max_0"]));
-  weap.fire_stat_max_1 = stoi(py::str(w["fire_stat_max_1"]));
-  weap.fire_stat_max_2 = stoi(py::str(w["fire_stat_max_2"]));
-  weap.fire_stat_max_3 = stoi(py::str(w["fire_stat_max_3"]));
-  weap.fire_stat_max_4 = stoi(py::str(w["fire_stat_max_4"]));
-  weap.fire_grow_0 = stoi(py::str(w["fire_grow_0"]));
-  weap.fire_grow_1 = stoi(py::str(w["fire_grow_1"]));
-  weap.fire_grow_2 = stoi(py::str(w["fire_grow_2"]));
-  weap.fire_grow_3 = stoi(py::str(w["fire_grow_3"]));
-  weap.fire_grow_4 = stoi(py::str(w["fire_grow_4"]));
-  weap.fire_adjustment_pt_grow_0 = stod(py::str(w["fire_adjustment_pt_grow_0"]));
-  weap.fire_adjustment_pt_grow_1 = stod(py::str(w["fire_adjustment_pt_grow_1"]));
-  weap.fire_adjustment_pt_grow_2 = stod(py::str(w["fire_adjustment_pt_grow_2"]));
-  weap.fire_adjustment_pt_grow_3 = stod(py::str(w["fire_adjustment_pt_grow_3"]));
-  weap.fire_adjustment_pt_grow_4 = stod(py::str(w["fire_adjustment_pt_grow_4"]));
+  weapon.fire_calc_correct_id = stoi(py::str(w["fire_calc_correct_id"]));
+  weapon.fire_stat_max_0 = stoi(py::str(w["fire_stat_max_0"]));
+  weapon.fire_stat_max_1 = stoi(py::str(w["fire_stat_max_1"]));
+  weapon.fire_stat_max_2 = stoi(py::str(w["fire_stat_max_2"]));
+  weapon.fire_stat_max_3 = stoi(py::str(w["fire_stat_max_3"]));
+  weapon.fire_stat_max_4 = stoi(py::str(w["fire_stat_max_4"]));
+  weapon.fire_grow_0 = stoi(py::str(w["fire_grow_0"]));
+  weapon.fire_grow_1 = stoi(py::str(w["fire_grow_1"]));
+  weapon.fire_grow_2 = stoi(py::str(w["fire_grow_2"]));
+  weapon.fire_grow_3 = stoi(py::str(w["fire_grow_3"]));
+  weapon.fire_grow_4 = stoi(py::str(w["fire_grow_4"]));
+  weapon.fire_adjustment_pt_grow_0 = stod(py::str(w["fire_adjustment_pt_grow_0"]));
+  weapon.fire_adjustment_pt_grow_1 = stod(py::str(w["fire_adjustment_pt_grow_1"]));
+  weapon.fire_adjustment_pt_grow_2 = stod(py::str(w["fire_adjustment_pt_grow_2"]));
+  weapon.fire_adjustment_pt_grow_3 = stod(py::str(w["fire_adjustment_pt_grow_3"]));
+  weapon.fire_adjustment_pt_grow_4 = stod(py::str(w["fire_adjustment_pt_grow_4"]));
 
   // Lightning
-  weap.lightning_calc_correct_id = stoi(py::str(w["lightning_calc_correct_id"]));
-  weap.lightning_stat_max_0 = stoi(py::str(w["lightning_stat_max_0"]));
-  weap.lightning_stat_max_1 = stoi(py::str(w["lightning_stat_max_1"]));
-  weap.lightning_stat_max_2 = stoi(py::str(w["lightning_stat_max_2"]));
-  weap.lightning_stat_max_3 = stoi(py::str(w["lightning_stat_max_3"]));
-  weap.lightning_stat_max_4 = stoi(py::str(w["lightning_stat_max_4"]));
-  weap.lightning_grow_0 = stoi(py::str(w["lightning_grow_0"]));
-  weap.lightning_grow_1 = stoi(py::str(w["lightning_grow_1"]));
-  weap.lightning_grow_2 = stoi(py::str(w["lightning_grow_2"]));
-  weap.lightning_grow_3 = stoi(py::str(w["lightning_grow_3"]));
-  weap.lightning_grow_4 = stoi(py::str(w["lightning_grow_4"]));
-  weap.lightning_adjustment_pt_grow_0 = stod(py::str(w["lightning_adjustment_pt_grow_0"]));
-  weap.lightning_adjustment_pt_grow_1 = stod(py::str(w["lightning_adjustment_pt_grow_1"]));
-  weap.lightning_adjustment_pt_grow_2 = stod(py::str(w["lightning_adjustment_pt_grow_2"]));
-  weap.lightning_adjustment_pt_grow_3 = stod(py::str(w["lightning_adjustment_pt_grow_3"]));
-  weap.lightning_adjustment_pt_grow_4 = stod(py::str(w["lightning_adjustment_pt_grow_4"]));
+  weapon.lightning_calc_correct_id = stoi(py::str(w["lightning_calc_correct_id"]));
+  weapon.lightning_stat_max_0 = stoi(py::str(w["lightning_stat_max_0"]));
+  weapon.lightning_stat_max_1 = stoi(py::str(w["lightning_stat_max_1"]));
+  weapon.lightning_stat_max_2 = stoi(py::str(w["lightning_stat_max_2"]));
+  weapon.lightning_stat_max_3 = stoi(py::str(w["lightning_stat_max_3"]));
+  weapon.lightning_stat_max_4 = stoi(py::str(w["lightning_stat_max_4"]));
+  weapon.lightning_grow_0 = stoi(py::str(w["lightning_grow_0"]));
+  weapon.lightning_grow_1 = stoi(py::str(w["lightning_grow_1"]));
+  weapon.lightning_grow_2 = stoi(py::str(w["lightning_grow_2"]));
+  weapon.lightning_grow_3 = stoi(py::str(w["lightning_grow_3"]));
+  weapon.lightning_grow_4 = stoi(py::str(w["lightning_grow_4"]));
+  weapon.lightning_adjustment_pt_grow_0 = stod(py::str(w["lightning_adjustment_pt_grow_0"]));
+  weapon.lightning_adjustment_pt_grow_1 = stod(py::str(w["lightning_adjustment_pt_grow_1"]));
+  weapon.lightning_adjustment_pt_grow_2 = stod(py::str(w["lightning_adjustment_pt_grow_2"]));
+  weapon.lightning_adjustment_pt_grow_3 = stod(py::str(w["lightning_adjustment_pt_grow_3"]));
+  weapon.lightning_adjustment_pt_grow_4 = stod(py::str(w["lightning_adjustment_pt_grow_4"]));
 
   // Holy
-  weap.holy_calc_correct_id = stoi(py::str(w["holy_calc_correct_id"]));
-  weap.holy_stat_max_0 = stoi(py::str(w["holy_stat_max_0"]));
-  weap.holy_stat_max_1 = stoi(py::str(w["holy_stat_max_1"]));
-  weap.holy_stat_max_2 = stoi(py::str(w["holy_stat_max_2"]));
-  weap.holy_stat_max_3 = stoi(py::str(w["holy_stat_max_3"]));
-  weap.holy_stat_max_4 = stoi(py::str(w["holy_stat_max_4"]));
-  weap.holy_grow_0 = stoi(py::str(w["holy_grow_0"]));
-  weap.holy_grow_1 = stoi(py::str(w["holy_grow_1"]));
-  weap.holy_grow_2 = stoi(py::str(w["holy_grow_2"]));
-  weap.holy_grow_3 = stoi(py::str(w["holy_grow_3"]));
-  weap.holy_grow_4 = stoi(py::str(w["holy_grow_4"]));
-  weap.holy_adjustment_pt_grow_0 = stod(py::str(w["holy_adjustment_pt_grow_0"]));
-  weap.holy_adjustment_pt_grow_1 = stod(py::str(w["holy_adjustment_pt_grow_1"]));
-  weap.holy_adjustment_pt_grow_2 = stod(py::str(w["holy_adjustment_pt_grow_2"]));
-  weap.holy_adjustment_pt_grow_3 = stod(py::str(w["holy_adjustment_pt_grow_3"]));
-  weap.holy_adjustment_pt_grow_4 = stod(py::str(w["holy_adjustment_pt_grow_4"]));
+  weapon.holy_calc_correct_id = stoi(py::str(w["holy_calc_correct_id"]));
+  weapon.holy_stat_max_0 = stoi(py::str(w["holy_stat_max_0"]));
+  weapon.holy_stat_max_1 = stoi(py::str(w["holy_stat_max_1"]));
+  weapon.holy_stat_max_2 = stoi(py::str(w["holy_stat_max_2"]));
+  weapon.holy_stat_max_3 = stoi(py::str(w["holy_stat_max_3"]));
+  weapon.holy_stat_max_4 = stoi(py::str(w["holy_stat_max_4"]));
+  weapon.holy_grow_0 = stoi(py::str(w["holy_grow_0"]));
+  weapon.holy_grow_1 = stoi(py::str(w["holy_grow_1"]));
+  weapon.holy_grow_2 = stoi(py::str(w["holy_grow_2"]));
+  weapon.holy_grow_3 = stoi(py::str(w["holy_grow_3"]));
+  weapon.holy_grow_4 = stoi(py::str(w["holy_grow_4"]));
+  weapon.holy_adjustment_pt_grow_0 = stod(py::str(w["holy_adjustment_pt_grow_0"]));
+  weapon.holy_adjustment_pt_grow_1 = stod(py::str(w["holy_adjustment_pt_grow_1"]));
+  weapon.holy_adjustment_pt_grow_2 = stod(py::str(w["holy_adjustment_pt_grow_2"]));
+  weapon.holy_adjustment_pt_grow_3 = stod(py::str(w["holy_adjustment_pt_grow_3"]));
+  weapon.holy_adjustment_pt_grow_4 = stod(py::str(w["holy_adjustment_pt_grow_4"]));
 
   // Poison
-  weap.poison_calc_correct_id = stoi(py::str(w["poison_calc_correct_id"]));
-  weap.poison_stat_max_0 = stoi(py::str(w["poison_stat_max_0"]));
-  weap.poison_stat_max_1 = stoi(py::str(w["poison_stat_max_1"]));
-  weap.poison_stat_max_2 = stoi(py::str(w["poison_stat_max_2"]));
-  weap.poison_stat_max_3 = stoi(py::str(w["poison_stat_max_3"]));
-  weap.poison_stat_max_4 = stoi(py::str(w["poison_stat_max_4"]));
-  weap.poison_grow_0 = stoi(py::str(w["poison_grow_0"]));
-  weap.poison_grow_1 = stoi(py::str(w["poison_grow_1"]));
-  weap.poison_grow_2 = stoi(py::str(w["poison_grow_2"]));
-  weap.poison_grow_3 = stoi(py::str(w["poison_grow_3"]));
-  weap.poison_grow_4 = stoi(py::str(w["poison_grow_4"]));
-  weap.poison_adjustment_pt_grow_0 = stod(py::str(w["poison_adjustment_pt_grow_0"]));
-  weap.poison_adjustment_pt_grow_1 = stod(py::str(w["poison_adjustment_pt_grow_1"]));
-  weap.poison_adjustment_pt_grow_2 = stod(py::str(w["poison_adjustment_pt_grow_2"]));
-  weap.poison_adjustment_pt_grow_3 = stod(py::str(w["poison_adjustment_pt_grow_3"]));
-  weap.poison_adjustment_pt_grow_4 = stod(py::str(w["poison_adjustment_pt_grow_4"]));
+  weapon.poison_calc_correct_id = stoi(py::str(w["poison_calc_correct_id"]));
+  weapon.poison_stat_max_0 = stoi(py::str(w["poison_stat_max_0"]));
+  weapon.poison_stat_max_1 = stoi(py::str(w["poison_stat_max_1"]));
+  weapon.poison_stat_max_2 = stoi(py::str(w["poison_stat_max_2"]));
+  weapon.poison_stat_max_3 = stoi(py::str(w["poison_stat_max_3"]));
+  weapon.poison_stat_max_4 = stoi(py::str(w["poison_stat_max_4"]));
+  weapon.poison_grow_0 = stoi(py::str(w["poison_grow_0"]));
+  weapon.poison_grow_1 = stoi(py::str(w["poison_grow_1"]));
+  weapon.poison_grow_2 = stoi(py::str(w["poison_grow_2"]));
+  weapon.poison_grow_3 = stoi(py::str(w["poison_grow_3"]));
+  weapon.poison_grow_4 = stoi(py::str(w["poison_grow_4"]));
+  weapon.poison_adjustment_pt_grow_0 = stod(py::str(w["poison_adjustment_pt_grow_0"]));
+  weapon.poison_adjustment_pt_grow_1 = stod(py::str(w["poison_adjustment_pt_grow_1"]));
+  weapon.poison_adjustment_pt_grow_2 = stod(py::str(w["poison_adjustment_pt_grow_2"]));
+  weapon.poison_adjustment_pt_grow_3 = stod(py::str(w["poison_adjustment_pt_grow_3"]));
+  weapon.poison_adjustment_pt_grow_4 = stod(py::str(w["poison_adjustment_pt_grow_4"]));
 
   // Bleed
-  weap.bleed_calc_correct_id = stoi(py::str(w["bleed_calc_correct_id"]));
-  weap.bleed_stat_max_0 = stoi(py::str(w["bleed_stat_max_0"]));
-  weap.bleed_stat_max_1 = stoi(py::str(w["bleed_stat_max_1"]));
-  weap.bleed_stat_max_2 = stoi(py::str(w["bleed_stat_max_2"]));
-  weap.bleed_stat_max_3 = stoi(py::str(w["bleed_stat_max_3"]));
-  weap.bleed_stat_max_4 = stoi(py::str(w["bleed_stat_max_4"]));
-  weap.bleed_grow_0 = stoi(py::str(w["bleed_grow_0"]));
-  weap.bleed_grow_1 = stoi(py::str(w["bleed_grow_1"]));
-  weap.bleed_grow_2 = stoi(py::str(w["bleed_grow_2"]));
-  weap.bleed_grow_3 = stoi(py::str(w["bleed_grow_3"]));
-  weap.bleed_grow_4 = stoi(py::str(w["bleed_grow_4"]));
-  weap.bleed_adjustment_pt_grow_0 = stod(py::str(w["bleed_adjustment_pt_grow_0"]));
-  weap.bleed_adjustment_pt_grow_1 = stod(py::str(w["bleed_adjustment_pt_grow_1"]));
-  weap.bleed_adjustment_pt_grow_2 = stod(py::str(w["bleed_adjustment_pt_grow_2"]));
-  weap.bleed_adjustment_pt_grow_3 = stod(py::str(w["bleed_adjustment_pt_grow_3"]));
-  weap.bleed_adjustment_pt_grow_4 = stod(py::str(w["bleed_adjustment_pt_grow_4"]));
+  weapon.bleed_calc_correct_id = stoi(py::str(w["bleed_calc_correct_id"]));
+  weapon.bleed_stat_max_0 = stoi(py::str(w["bleed_stat_max_0"]));
+  weapon.bleed_stat_max_1 = stoi(py::str(w["bleed_stat_max_1"]));
+  weapon.bleed_stat_max_2 = stoi(py::str(w["bleed_stat_max_2"]));
+  weapon.bleed_stat_max_3 = stoi(py::str(w["bleed_stat_max_3"]));
+  weapon.bleed_stat_max_4 = stoi(py::str(w["bleed_stat_max_4"]));
+  weapon.bleed_grow_0 = stoi(py::str(w["bleed_grow_0"]));
+  weapon.bleed_grow_1 = stoi(py::str(w["bleed_grow_1"]));
+  weapon.bleed_grow_2 = stoi(py::str(w["bleed_grow_2"]));
+  weapon.bleed_grow_3 = stoi(py::str(w["bleed_grow_3"]));
+  weapon.bleed_grow_4 = stoi(py::str(w["bleed_grow_4"]));
+  weapon.bleed_adjustment_pt_grow_0 = stod(py::str(w["bleed_adjustment_pt_grow_0"]));
+  weapon.bleed_adjustment_pt_grow_1 = stod(py::str(w["bleed_adjustment_pt_grow_1"]));
+  weapon.bleed_adjustment_pt_grow_2 = stod(py::str(w["bleed_adjustment_pt_grow_2"]));
+  weapon.bleed_adjustment_pt_grow_3 = stod(py::str(w["bleed_adjustment_pt_grow_3"]));
+  weapon.bleed_adjustment_pt_grow_4 = stod(py::str(w["bleed_adjustment_pt_grow_4"]));
 
   // Passives
 
-  weap.pass1_poison = stoi(py::str(w["pass1_poison"]));
-  weap.pass1_scarlet_rot = stoi(py::str(w["pass1_scarlet_rot"]));
-  weap.pass1_bleed = stoi(py::str(w["pass1_bleed"]));
-  weap.pass1_death = stoi(py::str(w["pass1_death"]));
-  weap.pass1_frost = stoi(py::str(w["pass1_frost"]));
-  weap.pass1_sleep = stoi(py::str(w["pass1_sleep"]));
-  weap.pass1_madness = stoi(py::str(w["pass1_madness"]));
+  weapon.pass1_poison = stoi(py::str(w["pass1_poison"]));
+  weapon.pass1_scarlet_rot = stoi(py::str(w["pass1_scarlet_rot"]));
+  weapon.pass1_bleed = stoi(py::str(w["pass1_bleed"]));
+  weapon.pass1_death = stoi(py::str(w["pass1_death"]));
+  weapon.pass1_frost = stoi(py::str(w["pass1_frost"]));
+  weapon.pass1_sleep = stoi(py::str(w["pass1_sleep"]));
+  weapon.pass1_madness = stoi(py::str(w["pass1_madness"]));
 
-  weap.pass2_poison = stoi(py::str(w["pass2_poison"]));
-  weap.pass2_scarlet_rot = stoi(py::str(w["pass2_scarlet_rot"]));
-  weap.pass2_bleed = stoi(py::str(w["pass2_bleed"]));
-  weap.pass2_death = stoi(py::str(w["pass2_death"]));
-  weap.pass2_frost = stoi(py::str(w["pass2_frost"]));
-  weap.pass2_sleep = stoi(py::str(w["pass2_sleep"]));
-  weap.pass2_madness = stoi(py::str(w["pass2_madness"]));
+  weapon.pass2_poison = stoi(py::str(w["pass2_poison"]));
+  weapon.pass2_scarlet_rot = stoi(py::str(w["pass2_scarlet_rot"]));
+  weapon.pass2_bleed = stoi(py::str(w["pass2_bleed"]));
+  weapon.pass2_death = stoi(py::str(w["pass2_death"]));
+  weapon.pass2_frost = stoi(py::str(w["pass2_frost"]));
+  weapon.pass2_sleep = stoi(py::str(w["pass2_sleep"]));
+  weapon.pass2_madness = stoi(py::str(w["pass2_madness"]));
 
-  weap.pass3_poison = stoi(py::str(w["pass3_poison"]));
-  weap.pass3_scarlet_rot = stoi(py::str(w["pass3_scarlet_rot"]));
-  weap.pass3_bleed = stoi(py::str(w["pass3_bleed"]));
-  weap.pass3_death = stoi(py::str(w["pass3_death"]));
-  weap.pass3_frost = stoi(py::str(w["pass3_frost"]));
-  weap.pass3_sleep = stoi(py::str(w["pass3_sleep"]));
-  weap.pass3_madness = stoi(py::str(w["pass3_madness"]));
+  weapon.pass3_poison = stoi(py::str(w["pass3_poison"]));
+  weapon.pass3_scarlet_rot = stoi(py::str(w["pass3_scarlet_rot"]));
+  weapon.pass3_bleed = stoi(py::str(w["pass3_bleed"]));
+  weapon.pass3_death = stoi(py::str(w["pass3_death"]));
+  weapon.pass3_frost = stoi(py::str(w["pass3_frost"]));
+  weapon.pass3_sleep = stoi(py::str(w["pass3_sleep"]));
+  weapon.pass3_madness = stoi(py::str(w["pass3_madness"]));
 
   // Maximized Values (will be needed by the template for display)
-  weap.max_physical_dmg = stod(py::str(w["max_physical_dmg"]));
-  weap.max_magic_dmg = stod(py::str(w["max_magic_dmg"]));
-  weap.max_fire_dmg = stod(py::str(w["max_fire_dmg"]));
-  weap.max_lightning_dmg = stod(py::str(w["max_lightning_dmg"]));
-  weap.max_holy_dmg = stod(py::str(w["max_holy_dmg"]));
-  weap.max_total_dmg = stod(py::str(w["max_total_dmg"]));
+  weapon.max_physical_dmg = stod(py::str(w["max_physical_dmg"]));
+  weapon.max_magic_dmg = stod(py::str(w["max_magic_dmg"]));
+  weapon.max_fire_dmg = stod(py::str(w["max_fire_dmg"]));
+  weapon.max_lightning_dmg = stod(py::str(w["max_lightning_dmg"]));
+  weapon.max_holy_dmg = stod(py::str(w["max_holy_dmg"]));
+  weapon.max_total_dmg = stod(py::str(w["max_total_dmg"]));
 
-  weap.max_poison = stod(py::str(w["max_poison"]));
-  weap.max_bleed = stod(py::str(w["max_bleed"]));
-  weap.max_frostbite = stod(py::str(w["max_frostbite"]));
-  weap.max_sleep = stod(py::str(w["max_sleep"]));
-  weap.max_madness = stod(py::str(w["max_madness"]));
-  weap.max_scarlet_rot = stod(py::str(w["max_scarlet_rot"]));
+  weapon.max_poison = stod(py::str(w["max_poison"]));
+  weapon.max_bleed = stod(py::str(w["max_bleed"]));
+  weapon.max_frostbite = stod(py::str(w["max_frostbite"]));
+  weapon.max_sleep = stod(py::str(w["max_sleep"]));
+  weapon.max_madness = stod(py::str(w["max_madness"]));
+  weapon.max_scarlet_rot = stod(py::str(w["max_scarlet_rot"]));
 
   if (main_hand) {
-	mh_weapon = weap;
+	mh_weapon = weapon;
+	using_main_hand = true;
   } else {
-	oh_weapon = weap;
-	dual_wield = true;
+	oh_weapon = weapon;
+	using_off_hand = true;
   }
 }
 
@@ -559,9 +560,13 @@ void ERBuildOptimizer::Optimize() {
   int min_max[5][2]{};
 
   // Constrain strength range
-  vector<int> attr = {optimal_character.base_strength, mh_weapon.required_str};
+  vector<int> attr = {optimal_character.base_strength};
 
-  if (dual_wield) {
+  if (using_main_hand) {
+	mh_weapon.required_str;
+  }
+
+  if (using_off_hand) {
 	attr.push_back(oh_weapon.required_str);
   }
 
@@ -569,7 +574,7 @@ void ERBuildOptimizer::Optimize() {
   sort(attr.begin(), attr.end(), greater<int>());
   min_max[0][0] = attr[0];            // Min
 
-  if (mh_weapon.correction_str > 0 || (dual_wield && oh_weapon.correction_str > 0)) {
+  if (using_main_hand && mh_weapon.correction_str > 0 || (using_off_hand && oh_weapon.correction_str > 0)) {
 	min_max[0][1] = MAX_ATTRIBUTE;      // Max
   } else {
 	min_max[0][1] = attr[0];        // Max
@@ -578,9 +583,12 @@ void ERBuildOptimizer::Optimize() {
   // Constrain dexterity range
   attr.clear();
   attr.push_back(optimal_character.base_dexterity);
-  attr.push_back(mh_weapon.required_dex);
 
-  if (dual_wield) {
+  if (using_main_hand) {
+	attr.push_back(mh_weapon.required_dex);
+  }
+
+  if (using_off_hand) {
 	attr.push_back(oh_weapon.required_dex);
   }
 
@@ -588,7 +596,7 @@ void ERBuildOptimizer::Optimize() {
   sort(attr.begin(), attr.end(), greater<int>());
   min_max[1][0] = attr[0];                // Min
 
-  if (mh_weapon.correction_dex > 0 || (dual_wield && oh_weapon.correction_dex > 0)) {
+  if (using_main_hand && mh_weapon.correction_dex > 0 || (using_off_hand && oh_weapon.correction_dex > 0)) {
 	min_max[1][1] = MAX_ATTRIBUTE;      // Max
   } else {
 	min_max[1][1] = attr[0];        // Max
@@ -597,16 +605,19 @@ void ERBuildOptimizer::Optimize() {
   // Constrain intelligence range
   attr.clear();
   attr.push_back(optimal_character.base_intelligence);
-  attr.push_back(mh_weapon.required_int);
 
-  if (dual_wield) {
+  if (using_main_hand) {
+	attr.push_back(mh_weapon.required_int);
+  }
+
+  if (using_off_hand) {
 	attr.push_back(oh_weapon.required_int);
   }
 
   // Reverse sort
   sort(attr.begin(), attr.end(), greater<int>());
   min_max[2][0] = attr[0];                // Min
-  if (mh_weapon.correction_int > 0 || (dual_wield && oh_weapon.correction_int > 0)) {
+  if (using_main_hand && mh_weapon.correction_int > 0 || (using_off_hand && oh_weapon.correction_int > 0)) {
 	min_max[2][1] = MAX_ATTRIBUTE;      // Max
   } else {
 	min_max[2][1] = attr[0];        // Max
@@ -615,16 +626,19 @@ void ERBuildOptimizer::Optimize() {
   // Constrain faith range
   attr.clear();
   attr.push_back(optimal_character.base_faith);
-  attr.push_back(mh_weapon.required_fai);
 
-  if (dual_wield) {
+  if (using_main_hand) {
+	attr.push_back(mh_weapon.required_fai);
+  }
+
+  if (using_off_hand) {
 	attr.push_back(oh_weapon.required_fai);
   }
 
   // Reverse sort
   sort(attr.begin(), attr.end(), greater<int>());
   min_max[3][0] = attr[0];                // Min
-  if (mh_weapon.correction_fai > 0 || (dual_wield && oh_weapon.correction_fai > 0)) {
+  if (using_main_hand && mh_weapon.correction_fai > 0 || (using_off_hand && oh_weapon.correction_fai > 0)) {
 	min_max[3][1] = MAX_ATTRIBUTE;      // Max
   } else {
 	min_max[3][1] = attr[0];        // Max
@@ -633,16 +647,19 @@ void ERBuildOptimizer::Optimize() {
   // Constrain arcane range
   attr.clear();
   attr.push_back(optimal_character.base_arcane);
-  attr.push_back(mh_weapon.required_arc);
 
-  if (dual_wield) {
+  if (using_main_hand) {
+	attr.push_back(mh_weapon.required_arc);
+  }
+
+  if (using_off_hand) {
 	attr.push_back(oh_weapon.required_arc);
   }
 
   // Reverse sort
   sort(attr.begin(), attr.end(), greater<int>());
   min_max[4][0] = attr[0];                // Min
-  if (mh_weapon.correction_arc > 0 || (dual_wield && oh_weapon.correction_arc > 0)) {
+  if (using_main_hand && mh_weapon.correction_arc > 0 || (using_off_hand && oh_weapon.correction_arc > 0)) {
 	min_max[4][1] = MAX_ATTRIBUTE;      // Max
   } else {
 	min_max[4][1] = attr[0];        // Max
@@ -669,7 +686,7 @@ void ERBuildOptimizer::Optimize() {
   std::function<void(AttributeTuple &, ERBuildOptimizer &)> eval_func = EvaluateByAR;
 
   if (optimization_type == OPTIMIZE_SKILL) {
-	std::function<void(int, int, int, int, int, ERBuildOptimizer &)> eval_func = EvaluateBySkillAR;
+	std::function<void(AttributeTuple &, ERBuildOptimizer &)> eval_func = EvaluateBySkillAR;
   }
 
   AttributeTuple attribute_tuple;
@@ -687,12 +704,13 @@ void ERBuildOptimizer::Optimize() {
   }
 
   // Calculate passive status effect values.
-  CalcPassives(mh_weapon);
-
   // Calculate weapon skill damage
-  CalcWeaponSkill(mh_weapon, optimal_character, mh_skill);
+  if (using_main_hand) {
+	CalcPassives(mh_weapon);
+	CalcWeaponSkill(mh_weapon, optimal_character, mh_skill);
+  }
 
-  if (dual_wield) {
+  if (using_off_hand) {
 	CalcPassives(oh_weapon);
 	CalcWeaponSkill(oh_weapon, optimal_character, oh_skill);
   }
@@ -702,34 +720,12 @@ void ERBuildOptimizer::Optimize() {
 
 void ERBuildOptimizer::EvaluateByAR(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
   // Calculate mainhand damages
-  double mh_physical_damage = CalculateCorrectedDamage(er.mh_weapon,
-													   attribute_tuple,
-													   DAMAGE_TYPE::PHYSICAL,
-													   er.mh_weapon.damage_physical * er.mh_weapon.damage_pct_physical,
-													   er.is_two_handing);
-  double mh_magic_damage = CalculateCorrectedDamage(er.mh_weapon,
-													attribute_tuple,
-													DAMAGE_TYPE::MAGIC,
-													er.mh_weapon.damage_magic * er.mh_weapon.damage_pct_magic,
-													er.is_two_handing);
-  double mh_fire_damage = CalculateCorrectedDamage(er.mh_weapon,
-												   attribute_tuple,
-												   DAMAGE_TYPE::FIRE,
-												   er.mh_weapon.damage_fire * er.mh_weapon.damage_pct_fire,
-												   er.is_two_handing);
-  double mh_lightning_damage = CalculateCorrectedDamage(er.mh_weapon,
-														attribute_tuple,
-														DAMAGE_TYPE::LIGHTNING,
-														er.mh_weapon.damage_lightning * er.mh_weapon.damage_pct_lightning,
-														er.is_two_handing);
-  double mh_holy_damage = CalculateCorrectedDamage(er.mh_weapon,
-												   attribute_tuple,
-												   DAMAGE_TYPE::HOLY,
-												   er.mh_weapon.damage_holy * er.mh_weapon.damage_pct_holy,
-												   er.is_two_handing);
-
-  double mh_total_damage = mh_physical_damage + mh_magic_damage + mh_fire_damage + mh_lightning_damage + mh_holy_damage;
-  double total_damage = mh_total_damage;
+  double mh_physical_damage = 0;
+  double mh_magic_damage = 0;
+  double mh_fire_damage = 0;
+  double mh_lightning_damage = 0;
+  double mh_holy_damage = 0;
+  double mh_total_damage = 0;
 
   double oh_physical_damage = 0;
   double oh_magic_damage = 0;
@@ -738,32 +734,69 @@ void ERBuildOptimizer::EvaluateByAR(const AttributeTuple &attribute_tuple, ERBui
   double oh_holy_damage = 0;
   double oh_total_damage = 0;
 
-  // Add off-hand damages
-  if (er.dual_wield) {
-	oh_physical_damage = CalculateCorrectedDamage(er.oh_weapon,
+  double total_damage = 0;
+
+  if (er.using_main_hand) {
+	mh_physical_damage = CalculateCorrectedDamage(er.mh_weapon,
 												  attribute_tuple,
 												  DAMAGE_TYPE::PHYSICAL,
 												  er.mh_weapon.damage_physical * er.mh_weapon.damage_pct_physical,
 												  er.is_two_handing);
-	oh_magic_damage = CalculateCorrectedDamage(er.oh_weapon,
+
+	mh_magic_damage = CalculateCorrectedDamage(er.mh_weapon,
 											   attribute_tuple,
 											   DAMAGE_TYPE::MAGIC,
 											   er.mh_weapon.damage_magic * er.mh_weapon.damage_pct_magic,
 											   er.is_two_handing);
-	oh_fire_damage = CalculateCorrectedDamage(er.oh_weapon,
+
+	mh_fire_damage = CalculateCorrectedDamage(er.mh_weapon,
 											  attribute_tuple,
 											  DAMAGE_TYPE::FIRE,
 											  er.mh_weapon.damage_fire * er.mh_weapon.damage_pct_fire,
 											  er.is_two_handing);
-	oh_lightning_damage = CalculateCorrectedDamage(er.oh_weapon,
+
+	mh_lightning_damage = CalculateCorrectedDamage(er.mh_weapon,
 												   attribute_tuple,
 												   DAMAGE_TYPE::LIGHTNING,
 												   er.mh_weapon.damage_lightning * er.mh_weapon.damage_pct_lightning,
 												   er.is_two_handing);
-	oh_holy_damage = CalculateCorrectedDamage(er.oh_weapon,
+
+	mh_holy_damage = CalculateCorrectedDamage(er.mh_weapon,
 											  attribute_tuple,
 											  DAMAGE_TYPE::HOLY,
 											  er.mh_weapon.damage_holy * er.mh_weapon.damage_pct_holy,
+											  er.is_two_handing);
+
+	mh_total_damage = mh_physical_damage + mh_magic_damage + mh_fire_damage + mh_lightning_damage + mh_holy_damage;
+	total_damage += mh_total_damage;
+  }
+
+  // Add off-hand damages
+  if (er.using_off_hand) {
+	oh_physical_damage = CalculateCorrectedDamage(er.oh_weapon,
+												  attribute_tuple,
+												  DAMAGE_TYPE::PHYSICAL,
+												  er.oh_weapon.damage_physical * er.oh_weapon.damage_pct_physical,
+												  er.is_two_handing);
+	oh_magic_damage = CalculateCorrectedDamage(er.oh_weapon,
+											   attribute_tuple,
+											   DAMAGE_TYPE::MAGIC,
+											   er.oh_weapon.damage_magic * er.oh_weapon.damage_pct_magic,
+											   er.is_two_handing);
+	oh_fire_damage = CalculateCorrectedDamage(er.oh_weapon,
+											  attribute_tuple,
+											  DAMAGE_TYPE::FIRE,
+											  er.oh_weapon.damage_fire * er.oh_weapon.damage_pct_fire,
+											  er.is_two_handing);
+	oh_lightning_damage = CalculateCorrectedDamage(er.oh_weapon,
+												   attribute_tuple,
+												   DAMAGE_TYPE::LIGHTNING,
+												   er.oh_weapon.damage_lightning * er.oh_weapon.damage_pct_lightning,
+												   er.is_two_handing);
+	oh_holy_damage = CalculateCorrectedDamage(er.oh_weapon,
+											  attribute_tuple,
+											  DAMAGE_TYPE::HOLY,
+											  er.oh_weapon.damage_holy * er.oh_weapon.damage_pct_holy,
 											  er.is_two_handing);
 
 	oh_total_damage = oh_physical_damage + oh_magic_damage + oh_fire_damage + oh_lightning_damage + oh_holy_damage;
@@ -782,14 +815,12 @@ void ERBuildOptimizer::EvaluateByAR(const AttributeTuple &attribute_tuple, ERBui
 	er.mh_weapon.max_holy_dmg = mh_holy_damage;
 	er.mh_weapon.max_total_dmg = mh_total_damage;
 
-	if (er.dual_wield) {
-	  er.oh_weapon.max_physical_dmg = oh_physical_damage;
-	  er.oh_weapon.max_magic_dmg = oh_magic_damage;
-	  er.oh_weapon.max_fire_dmg = oh_fire_damage;
-	  er.oh_weapon.max_lightning_dmg = oh_lightning_damage;
-	  er.oh_weapon.max_holy_dmg = oh_holy_damage;
-	  er.oh_weapon.max_total_dmg = oh_total_damage;
-	}
+	er.oh_weapon.max_physical_dmg = oh_physical_damage;
+	er.oh_weapon.max_magic_dmg = oh_magic_damage;
+	er.oh_weapon.max_fire_dmg = oh_fire_damage;
+	er.oh_weapon.max_lightning_dmg = oh_lightning_damage;
+	er.oh_weapon.max_holy_dmg = oh_holy_damage;
+	er.oh_weapon.max_total_dmg = oh_total_damage;
 
 	er.optimal_character.opt_strength = attribute_tuple.strength;
 	er.optimal_character.opt_dexterity = attribute_tuple.dexterity;
@@ -885,7 +916,7 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
   }
 }
 
-void ERBuildOptimizer::EvaluateBySkillAR(const int s, const int d, const int i, const int f, const int a, ERBuildOptimizer &er) {
+void ERBuildOptimizer::EvaluateBySkillAR(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er) {
   // TODO
 }
 
