@@ -13,6 +13,22 @@ enum class DAMAGE_TYPE {
 
 namespace py = pybind11;
 
+enum OPTIMIZATION_TYPE {
+  DAMAGE_TOTAL,
+  DAMAGE_PHYSICAL,
+  DAMAGE_MAGIC,
+  DAMAGE_FIRE,
+  DAMAGE_LIGHTNING,
+  DAMAGE_HOLY,
+  DAMAGE_SKILL,
+  STATUS_POISON,
+  STATUS_BLEED,
+  STATUS_FROSTBITE,
+  STATUS_SLEEP,
+  STATUS_MADNESS,
+  STATUS_SCARLET_ROT
+};
+
 struct AttributeTuple {
   int strength = 0;
   int dexterity = 0;
@@ -77,9 +93,6 @@ class ERBuildOptimizer {
   unsigned long long const FAI_MASK = 0x000000FF00;
   unsigned long long const ARC_MASK = 0x00000000FF;
 
-  int const OPTIMIZE_AR = 0;
-  int const OPTIMIZE_SKILL = 1;
-
   static int const CALC_PROCEED = -1;
   static int const CALC_SUCCESS = 0;
   static int const CALC_FAIL_LEVEL_HIGH = 1;
@@ -92,7 +105,7 @@ class ERBuildOptimizer {
   int target_level = 0;
   bool is_two_handing = false;
   int correct_bitmask = 0;
-  double highest_damage = 0;
+  double highest_result = 0;
   int calculation_result = CALC_PROCEED;
 
   double CalculatePassive(const int base, const int correction_arc, const double correction_pct_arc, const int stat_max_0,
@@ -101,37 +114,35 @@ class ERBuildOptimizer {
 						  const double adj_pt_grow_1, const double adj_pt_grow_2, const double adj_pt_grow_3,
 						  const double adj_pt_grow_4) const;
 
-  static void EvaluateByAR(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
 
-  static void EvaluateBySkillAR(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static double EvaluateWeaponDamage(const Weapon &weapon, const AttributeTuple &attribute_tuple, const bool is_two_handing, const OPTIMIZATION_TYPE optimization_type);
+  static void EvaluateSkillDamage(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static void EvaluateStatusPoison(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static void EvaluateStatusBleed(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static void EvaluateStatusFrostbite(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static void EvaluateStatusSleep(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static void EvaluateStatusMadness(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
+  static void EvaluateStatusScarletRot(const AttributeTuple & attribute_tuple, ERBuildOptimizer &er);
 
-  int Validate(const int min_max[][2]) const;
 
-  void CalcPassives(Weapon &selected_weapon);
-
+  void CalcWeaponDamage(Weapon &weapon, const Tarnished &tarnished);
+  void CalcPassives(Weapon &weapon);
   void CalcWeaponSkill(const Weapon &weapon, const Tarnished &tarnished, WeaponSkill &selected_skill);
-
-  static double CalculateCorrectedDamage(const Weapon &selected_weapon, const AttributeTuple &attribute_tuple,
-										 const DAMAGE_TYPE damage_type, const double base_damage, const bool is_two_handing);
-
+  int Validate(const int min_max[][2]) const;
+  static double CalculateCorrectedDamage(const Weapon &selected_weapon, const AttributeTuple &attribute_tuple, const CorrectionTuple & scaling_tuple,
+										 const DAMAGE_TYPE damage_type, const double base_damage, const bool is_two_handing, const int attack_element_correct_bitmask);
   static inline double CalculateCorrectFn(const double attribute, const int stat_max[], const int grow[], const double adj_pt_grow[]);
-
   static inline double CalcCorrectFnInner(const double attribute, const int stat_max, const int stat_max_n, const int grow,
 										  const int grow_n, const double adj_grow);
-
   static inline int ConvertBitMask(const std::string mask);
+  static void GetWeaponSkillScaling(const Weapon &weapon, WeaponSkill &skill, CorrectionTuple &scaling_tuple, DAMAGE_TYPE damage_type);
 
  public:
   ERBuildOptimizer(const int target_level, const bool is_two_handing, const Tarnished &character, const int optimization_type);
-
   ERBuildOptimizer(const int target_level, const bool is_two_handing, const py::dict &character, const int optimization_type);
-
   void SetWeapon(const bool main_hand, const py::dict &w);
-
   void SetWeaponSkill(const bool main_hand, const py::dict &skill);
-
   void Optimize();
-
   int GetCalculationResult();
 
   Tarnished optimal_character;
@@ -139,7 +150,8 @@ class ERBuildOptimizer {
   Weapon oh_weapon;
   WeaponSkill mh_skill;
   WeaponSkill oh_skill;
-  int optimization_type;
+  OPTIMIZATION_TYPE mh_optimization_type;
+  OPTIMIZATION_TYPE oh_optimization_type;
 };
 
-#endif // !BUILD_OPTIMIZER_H
+#endif // ERBUILD_OPTIMIZER_H
