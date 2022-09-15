@@ -8,7 +8,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(ERBuildOptimizerModule, m) {
   py::class_<ERBuildOptimizer>(m, "ERBuildOptimizer", py::dynamic_attr())
-	  .def(py::init<const int, const bool, const py::dict &, const int>())
+	  .def(py::init<const int, const bool, const py::dict &, const int, const int>())
 	  .def("SetWeapon", &ERBuildOptimizer::SetWeapon)
 	  .def("SetWeaponSkill", &ERBuildOptimizer::SetWeaponSkill)
 	  .def_readwrite("mh_weapon", &ERBuildOptimizer::mh_weapon)

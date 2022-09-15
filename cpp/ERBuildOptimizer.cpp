@@ -11,6 +11,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
   // Bleed Scaling
   if (weapon.pass1_bleed > 0) {
 	weapon.max_bleed = CalculatePassive(weapon.pass1_bleed,
+										optimal_character.opt_arcane,
 										weapon.correction_arc,
 										weapon.correction_pct_arc,
 										weapon.bleed_stat_max_0,
@@ -30,6 +31,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
 										weapon.bleed_adjustment_pt_grow_4);
   } else if (weapon.pass2_bleed > 0) {
 	weapon.max_bleed = CalculatePassive(weapon.pass2_bleed,
+										optimal_character.opt_arcane,
 										weapon.correction_arc,
 										weapon.correction_pct_arc,
 										weapon.bleed_stat_max_0,
@@ -49,6 +51,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
 										weapon.bleed_adjustment_pt_grow_4);
   } else if (weapon.pass3_bleed) {
 	weapon.max_bleed = CalculatePassive(weapon.pass3_bleed,
+										optimal_character.opt_arcane,
 										weapon.correction_arc,
 										weapon.correction_pct_arc,
 										weapon.bleed_stat_max_0,
@@ -71,6 +74,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
   // Poison Scaling
   if (weapon.pass1_poison > 0) {
 	weapon.max_poison = CalculatePassive(weapon.pass1_poison,
+										 optimal_character.opt_arcane,
 										 weapon.correction_arc,
 										 weapon.correction_pct_arc,
 										 weapon.poison_stat_max_0,
@@ -90,6 +94,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
 										 weapon.poison_adjustment_pt_grow_4);
   } else if (weapon.pass2_poison > 0) {
 	weapon.max_poison = CalculatePassive(weapon.pass2_poison,
+										 optimal_character.opt_arcane,
 										 weapon.correction_arc,
 										 weapon.correction_pct_arc,
 										 weapon.poison_stat_max_0,
@@ -109,6 +114,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
 										 weapon.poison_adjustment_pt_grow_4);
   } else if (weapon.pass3_poison > 0) {
 	weapon.max_poison = CalculatePassive(weapon.pass3_poison,
+										 optimal_character.opt_arcane,
 										 weapon.correction_arc,
 										 weapon.correction_pct_arc,
 										 weapon.poison_stat_max_0,
@@ -164,6 +170,7 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
 // Calculate a passive effect
 // Given by: base + base * passive_arcane_calc_correct * arc scaling
 double ERBuildOptimizer::CalculatePassive(const int base,
+										  const int arcane,
 										  const int correction_arc,
 										  const double correction_pct_arc,
 										  const int stat_max_0,
@@ -180,23 +187,19 @@ double ERBuildOptimizer::CalculatePassive(const int base,
 										  const double adj_pt_grow_1,
 										  const double adj_pt_grow_2,
 										  const double adj_pt_grow_3,
-										  const double adj_pt_grow_4) const {
+										  const double adj_pt_grow_4) {
 
   // Build correction arrays
   int stat_max[5]{stat_max_0, stat_max_1, stat_max_2, stat_max_3, stat_max_4,};
-
   int grow[5]{grow_0, grow_1, grow_2, grow_3, grow_4,};
-
   double adj_pt_grow[5]{adj_pt_grow_0, adj_pt_grow_1, adj_pt_grow_2, adj_pt_grow_3, adj_pt_grow_4,};
 
-  return base + base * CalculateCorrectFn(optimal_character.opt_arcane, stat_max, grow, adj_pt_grow) * correction_arc * correction_pct_arc
-	  / 10000.0;
+  return base + base * CalculateCorrectFn(arcane, stat_max, grow, adj_pt_grow) * correction_arc * correction_pct_arc / 10000.0;
 }
 
 // Populate weapon skill damages and types.
-void ERBuildOptimizer::CalcWeaponSkill(const Weapon &selected_weapon, const Tarnished &tarnished, WeaponSkill &selected_skill) {
-
-  // Calculate base physical damage.
+void ERBuildOptimizer::CalcWeaponSkill(const Weapon &selected_weapon, const Tarnished &tarnished, WeaponSkill &selected_skill) const {
+  // Calculate base damage.
   double base_damage_physical =
 	  selected_weapon.damage_physical * selected_weapon.damage_pct_physical * selected_skill.atk_correct_physical / 100.0
 		  + 4 * selected_skill.atk_physical;
@@ -298,10 +301,10 @@ int ERBuildOptimizer::Validate(const int min_max[][2]) const {
 		  + optimal_character.endurance - LEVEL_OFFSET;
 
   if (min_attainable_level > target_level) {
-	// Minimum possibe attribute combo is too high for level.Decrease V, M, E, or raise Level
+	// Minimum possible attribute combo is too high for level.Decrease V, M, E, or raise Level
 	return CALC_FAIL_LEVEL_LOW;
   } else if (max_attainable_level < target_level) {
-	// Maximum possibe attribute combo is too low for level.Increase V, M, E, or lower Level
+	// Maximum possible attribute combo is too low for level.Increase V, M, E, or lower Level
 	return CALC_FAIL_LEVEL_HIGH;
   }
 
@@ -312,10 +315,12 @@ int ERBuildOptimizer::Validate(const int min_max[][2]) const {
 ERBuildOptimizer::ERBuildOptimizer(const int target_level,
 								   const bool is_two_handing,
 								   const py::dict &character,
-								   const int optimization_type) {
+								   const int mh_optimization_type,
+								   const int oh_optimization_type) {
   this->target_level = target_level;
   this->is_two_handing = is_two_handing;
-  this->mh_optimization_type = (OPTIMIZATION_TYPE)optimization_type;
+  this->mh_optimization_type = (OPTIMIZATION_TYPE)mh_optimization_type;
+  this->oh_optimization_type = (OPTIMIZATION_TYPE)oh_optimization_type;
 
   // Fill out optimal_character with
   optimal_character.name = string(py::str(character["name"]));
@@ -339,17 +344,6 @@ ERBuildOptimizer::ERBuildOptimizer(const int target_level,
   optimal_character.opt_intelligence = stoi(string(py::str(character["opt_intelligence"])));
   optimal_character.opt_faith = stoi(string(py::str(character["opt_faith"])));
   optimal_character.opt_arcane = stoi(string(py::str(character["opt_arcane"])));
-}
-
-// Non-python Constructor
-ERBuildOptimizer::ERBuildOptimizer(const int target_level,
-								   const bool is_two_handing,
-								   const Tarnished &character,
-								   const int optimization_type) {
-  this->target_level = target_level;
-  this->is_two_handing = is_two_handing;
-  this->mh_optimization_type = (OPTIMIZATION_TYPE)optimization_type;
-  optimal_character = character;
 }
 
 // Set weapon main hand and off hand weapons
@@ -583,13 +577,13 @@ void ERBuildOptimizer::SetWeapon(const bool main_hand, const py::dict &w) {
 }
 
 // Get calculation_result
-int ERBuildOptimizer::GetCalculationResult() {
+int ERBuildOptimizer::GetCalculationResult() const {
   return calculation_result;
 }
 
 // Converts a string bitmask to an integer one.
 // On the DB side, string bitmask is a concatenation of AttackElementCorrectParam table columns.
-inline int ERBuildOptimizer::ConvertBitMask(const std::string mask) {
+inline int ERBuildOptimizer::ConvertBitMask(const std::string &mask) {
   size_t length = mask.length();
   int bitmask = 0;
 
@@ -730,18 +724,13 @@ void ERBuildOptimizer::Optimize() {
   vector<unsigned long long> solution_sets = SubsetSum::GetAllSubsets(subset_target, min_max);
 
   // Determine which evaluation function(s) to use.
-  std::function<double(Weapon &, AttributeTuple &, bool, OPTIMIZATION_TYPE)> mh_eval_func;
-  std::function<double(Weapon &, AttributeTuple &, bool, OPTIMIZATION_TYPE)> oh_eval_func;
+  std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> mh_eval_func;
+  std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> oh_eval_func;
 
-  switch (mh_optimization_type) {
-	default: mh_eval_func = EvaluateWeaponDamage;
-	  break;
-  }
-
-  switch (oh_optimization_type) {
-	default: oh_eval_func = EvaluateWeaponDamage;
-	  break;
-  }
+  if (using_main_hand)
+	mh_eval_func = GetOptEvaluator(mh_optimization_type);
+  if (using_main_hand)
+	oh_eval_func = GetOptEvaluator(oh_optimization_type);
 
   AttributeTuple attribute_tuple;
   size_t solution_count = solution_sets.size();
@@ -762,10 +751,10 @@ void ERBuildOptimizer::Optimize() {
 
 	// Get main hand and off hand results separately.
 	if (using_main_hand) {
-	  mh_result = mh_eval_func(mh_weapon, attribute_tuple, is_two_handing, mh_optimization_type);
+	  mh_result = mh_eval_func(attribute_tuple, true, *this);
 	}
 	if (using_off_hand) {
-	  oh_result = oh_eval_func(oh_weapon, attribute_tuple, is_two_handing, oh_optimization_type);
+	  oh_result = oh_eval_func(attribute_tuple, true, *this);
 	}
 
 	result = mh_result + oh_result;
@@ -796,104 +785,353 @@ void ERBuildOptimizer::Optimize() {
   }
 }
 
-// Determine which values to use for correction function
-inline double ERBuildOptimizer::CalculateCorrectFn(const double attribute,
-												   const int stat_max[],
-												   const int grow[],
-												   const double adj_pt_grow[]) {
+// Determine which evaluation function should be used, based on the selected optimization type.
+std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> ERBuildOptimizer::GetOptEvaluator(OPTIMIZATION_TYPE optimization_type) {
+  // Weapon attack
+  if (optimization_type >= OPTIMIZATION_TYPE::DAMAGE_TOTAL <= OPTIMIZATION_TYPE::DAMAGE_HOLY) {
+	return EvaluateWeaponDamage;
+  }
 
-  // IF(B$2 > 80, ADD(90, MULTIPLY(20, DIVIDE(B$2 - 80, 70))),
-  // IF(B$2 > 60, ADD(75, MULTIPLY(15, DIVIDE(B$2 - 60, 20))),
-  // IF(B$2 > 18, ADD(25, MULTIPLY(50, MINUS(1, POW(MINUS(1, DIVIDE(B$2 - 18, 42)), 1.2)))),
-  // MULTIPLY(25, POW(DIVIDE(B$2 - 1, 17), 1.2))))),
+  // Weapon skill
+  if (optimization_type == OPTIMIZATION_TYPE::DAMAGE_SKILL) {
+	return EvaluateSkillDamage;
+  }
 
-  // Determine which max, grow, and adj_pt_grow values to use
-  if (attribute > stat_max[3])
-	return CalcCorrectFnInner(attribute, stat_max[3], stat_max[4], grow[3], grow[4], adj_pt_grow[3]);
-  else if (attribute > stat_max[2])
-	return CalcCorrectFnInner(attribute, stat_max[2], stat_max[3], grow[2], grow[3], adj_pt_grow[2]);
-  else if (attribute > stat_max[1])
-	return CalcCorrectFnInner(attribute, stat_max[1], stat_max[2], grow[1], grow[2], adj_pt_grow[1]);
-  else
-	return CalcCorrectFnInner(attribute, stat_max[0], stat_max[1], grow[0], grow[1], adj_pt_grow[0]);
-}
-
-// Inline portion of calc correction function. Separated out for readability.
-inline double ERBuildOptimizer::CalcCorrectFnInner(const double attribute,
-												   const int stat_max,
-												   const int stat_max_n,
-												   const int grow,
-												   const int grow_n,
-												   const double adj_grow) {
-  if (adj_grow < 0)
-	return grow + (grow_n - grow) * (1 - pow(1 - (attribute - stat_max) / (double)(stat_max_n - stat_max), abs(adj_grow)));
-  else
-	return grow + (grow_n - grow) * pow((attribute - stat_max) / (double)(stat_max_n - stat_max), adj_grow);
+  // Status effects
+  if (optimization_type >= OPTIMIZATION_TYPE::STATUS_POISON) {
+	return EvaluateStatusEffect;
+  }
 }
 
 // Evaluate by Weapon Damage
-double ERBuildOptimizer::EvaluateWeaponDamage(const Weapon &weapon,
-											  const AttributeTuple &attribute_tuple,
-											  const bool is_two_handing,
-											  const OPTIMIZATION_TYPE optimization_type) {
+double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er) {
   // 0: total, 1: physical, 2: magic, 3: fire, 4: lightning, 5: holy
   double damage[6]{0, 0, 0, 0, 0, 0};
+  Weapon *weapon;
+  OPTIMIZATION_TYPE optimization_type;
+
+  if (main_hand) {
+	weapon = &er.mh_weapon;
+	optimization_type = er.mh_optimization_type;
+  } else {
+	weapon = &er.oh_weapon;
+	optimization_type = er.oh_optimization_type;
+  }
 
   CorrectionTuple scaling_tuple{
-	  .correction_str =  weapon.correction_str,
-	  .correction_dex =  weapon.correction_dex,
-	  .correction_int =  weapon.correction_int,
-	  .correction_fai =  weapon.correction_fai,
-	  .correction_arc =  weapon.correction_arc,
+	  .correction_str =  weapon->correction_str,
+	  .correction_dex =  weapon->correction_dex,
+	  .correction_int =  weapon->correction_int,
+	  .correction_fai =  weapon->correction_fai,
+	  .correction_arc =  weapon->correction_arc
   };
 
   // Get physical damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_PHYSICAL] = CalculateCorrectedDamage(weapon,
-																		attribute_tuple,
-																		scaling_tuple,
-																		DAMAGE_TYPE::PHYSICAL,
-																		weapon.damage_physical * weapon.damage_pct_physical,
-																		is_two_handing, weapon.attack_element_correct_bitmask);
+  damage[1] = CalculateCorrectedDamage(*weapon,
+									   attribute_tuple,
+									   scaling_tuple,
+									   DAMAGE_TYPE::PHYSICAL,
+									   weapon->damage_physical * weapon->damage_pct_physical,
+									   er.is_two_handing, weapon->attack_element_correct_bitmask);
 
   // Get magic damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_MAGIC] = CalculateCorrectedDamage(weapon,
-																	 attribute_tuple,
-																	 scaling_tuple,
-																	 DAMAGE_TYPE::MAGIC,
-																	 weapon.damage_magic * weapon.damage_pct_magic,
-																	 is_two_handing, weapon.attack_element_correct_bitmask);
+  damage[2] = CalculateCorrectedDamage(*weapon,
+									  attribute_tuple,
+									  scaling_tuple,
+									  DAMAGE_TYPE::MAGIC,
+									  weapon->damage_magic * weapon->damage_pct_magic,
+									  er.is_two_handing, weapon->attack_element_correct_bitmask);
 
   // Get fire damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_FIRE] = CalculateCorrectedDamage(weapon,
-																	attribute_tuple,
-																	scaling_tuple,
-																	DAMAGE_TYPE::FIRE,
-																	weapon.damage_fire * weapon.damage_pct_fire,
-																	is_two_handing, weapon.attack_element_correct_bitmask);
+  damage[3] = CalculateCorrectedDamage(*weapon,
+									   attribute_tuple,
+									   scaling_tuple,
+									   DAMAGE_TYPE::FIRE,
+									   weapon->damage_fire * weapon->damage_pct_fire,
+									   er.is_two_handing, weapon->attack_element_correct_bitmask);
 
   // Get lightning damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_LIGHTNING] = CalculateCorrectedDamage(weapon,
-																		 attribute_tuple,
-																		 scaling_tuple,
-																		 DAMAGE_TYPE::LIGHTNING,
-																		 weapon.damage_lightning * weapon.damage_pct_lightning,
-																		 is_two_handing, weapon.attack_element_correct_bitmask);
+  damage[4] = CalculateCorrectedDamage(*weapon,
+									   attribute_tuple,
+									   scaling_tuple,
+									   DAMAGE_TYPE::LIGHTNING,
+									   weapon->damage_lightning * weapon->damage_pct_lightning,
+									   er.is_two_handing, weapon->attack_element_correct_bitmask);
 
   // Get holy damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_HOLY] = CalculateCorrectedDamage(weapon,
-																	attribute_tuple,
-																	scaling_tuple,
-																	DAMAGE_TYPE::HOLY,
-																	weapon.damage_holy * weapon.damage_pct_holy,
-																	is_two_handing, weapon.attack_element_correct_bitmask);
+  damage[5] = CalculateCorrectedDamage(*weapon,
+									   attribute_tuple,
+									   scaling_tuple,
+									   DAMAGE_TYPE::HOLY,
+									   weapon->damage_holy * weapon->damage_pct_holy,
+									   er.is_two_handing, weapon->attack_element_correct_bitmask);
 
   // Get total damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_TOTAL] =
-	  damage[OPTIMIZATION_TYPE::DAMAGE_PHYSICAL] + damage[OPTIMIZATION_TYPE::DAMAGE_MAGIC] + damage[OPTIMIZATION_TYPE::DAMAGE_FIRE]
-		  + damage[OPTIMIZATION_TYPE::DAMAGE_LIGHTNING] + damage[OPTIMIZATION_TYPE::DAMAGE_HOLY];
+  damage[0] = damage[1] + damage[2] + damage[3] + damage[4] + damage[5];
 
   // Return the desired damage type.
   return damage[optimization_type];
+}
+
+double ERBuildOptimizer::EvaluateSkillDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er) {
+  Weapon *weapon;
+  WeaponSkill *skill;
+
+  if (main_hand) {
+	weapon = &er.mh_weapon;
+	skill = &er.mh_skill;
+  } else {
+	weapon = &er.oh_weapon;
+	skill = &er.oh_skill;
+  }
+
+  // Calculate base damage.
+  double base_damage_physical =
+	  weapon->damage_physical * weapon->damage_pct_physical * skill->atk_correct_physical / 100.0 + 4 * skill->atk_physical;
+  double base_damage_magic = weapon->damage_magic * weapon->damage_pct_magic * skill->atk_correct_magic / 100.0 + 4 * skill->atk_magic;
+  double base_damage_fire = weapon->damage_fire * weapon->damage_pct_fire * skill->atk_correct_fire / 100.0 + 4 * skill->atk_fire;
+  double base_damage_lightning =
+	  weapon->damage_lightning * weapon->damage_pct_lightning * skill->atk_correct_lightning / 100.0 + 4 * skill->atk_lightning;
+  double base_damage_holy = weapon->damage_holy * weapon->damage_pct_holy * skill->atk_correct_holy / 100.0 + 4 * skill->atk_holy;
+
+  // Determine if the two-handed attack bonus is applied.
+  bool two_hand_bonus = er.is_two_handing && !skill->disable_2h_atk_bonus;
+
+  CorrectionTuple scaling_tuple;
+
+  GetWeaponSkillScaling(*weapon, *skill, scaling_tuple, DAMAGE_TYPE::PHYSICAL);
+
+  double damage_physical =
+	  CalculateCorrectedDamage(*weapon,
+							   attribute_tuple,
+							   scaling_tuple,
+							   DAMAGE_TYPE::PHYSICAL,
+							   base_damage_physical,
+							   two_hand_bonus,
+							   weapon->attack_element_correct_bitmask);
+
+  GetWeaponSkillScaling(*weapon, *skill, scaling_tuple, DAMAGE_TYPE::MAGIC);
+
+  double damage_magic =
+	  CalculateCorrectedDamage(*weapon,
+							   attribute_tuple,
+							   scaling_tuple,
+							   DAMAGE_TYPE::MAGIC,
+							   base_damage_magic,
+							   two_hand_bonus,
+							   weapon->attack_element_correct_bitmask);
+
+  GetWeaponSkillScaling(*weapon, *skill, scaling_tuple, DAMAGE_TYPE::FIRE);
+
+  double damage_fire =
+	  CalculateCorrectedDamage(*weapon,
+							   attribute_tuple,
+							   scaling_tuple,
+							   DAMAGE_TYPE::FIRE,
+							   base_damage_fire,
+							   two_hand_bonus,
+							   weapon->attack_element_correct_bitmask);
+
+  GetWeaponSkillScaling(*weapon, *skill, scaling_tuple, DAMAGE_TYPE::LIGHTNING);
+
+  double damage_lightning =
+	  CalculateCorrectedDamage(*weapon,
+							   attribute_tuple,
+							   scaling_tuple,
+							   DAMAGE_TYPE::LIGHTNING,
+							   base_damage_lightning,
+							   two_hand_bonus, weapon->attack_element_correct_bitmask);
+
+  GetWeaponSkillScaling(*weapon, *skill, scaling_tuple, DAMAGE_TYPE::HOLY);
+
+  double damage_holy =
+	  CalculateCorrectedDamage(*weapon,
+							   attribute_tuple,
+							   scaling_tuple,
+							   DAMAGE_TYPE::HOLY,
+							   base_damage_holy,
+							   two_hand_bonus,
+							   weapon->attack_element_correct_bitmask);
+
+  // Return the result.
+  return damage_physical + damage_magic + damage_fire + damage_lightning + damage_holy;
+}
+
+// Evaluate by Status Effect
+double ERBuildOptimizer::EvaluateStatusEffect(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er) {
+  // 0: poison, 1: bleed, 2: frost, 3: sleep, 4: madness, 5: scarlet rot
+  double status[6]{0, 0, 0, 0, 0, 0};
+  Weapon *weapon;
+  OPTIMIZATION_TYPE optimization_type;
+
+  if (main_hand) {
+	weapon = &er.mh_weapon;
+	optimization_type = er.mh_optimization_type;
+  } else {
+	weapon = &er.oh_weapon;
+	optimization_type = er.oh_optimization_type;
+  }
+
+  // Poison Scaling
+  if (weapon->pass1_poison > 0) {
+	status[0] = CalculatePassive(weapon->pass1_poison,
+								 attribute_tuple.arcane,
+								 weapon->correction_arc,
+								 weapon->correction_pct_arc,
+								 weapon->poison_stat_max_0,
+								 weapon->poison_stat_max_1,
+								 weapon->poison_stat_max_2,
+								 weapon->poison_stat_max_3,
+								 weapon->poison_stat_max_4,
+								 weapon->poison_grow_0,
+								 weapon->poison_grow_1,
+								 weapon->poison_grow_2,
+								 weapon->poison_grow_3,
+								 weapon->poison_grow_4,
+								 weapon->poison_adjustment_pt_grow_0,
+								 weapon->poison_adjustment_pt_grow_1,
+								 weapon->poison_adjustment_pt_grow_2,
+								 weapon->poison_adjustment_pt_grow_3,
+								 weapon->poison_adjustment_pt_grow_4);
+  } else if (weapon->pass2_poison > 0) {
+	status[0] = CalculatePassive(weapon->pass2_poison,
+								 attribute_tuple.arcane,
+								 weapon->correction_arc,
+								 weapon->correction_pct_arc,
+								 weapon->poison_stat_max_0,
+								 weapon->poison_stat_max_1,
+								 weapon->poison_stat_max_2,
+								 weapon->poison_stat_max_3,
+								 weapon->poison_stat_max_4,
+								 weapon->poison_grow_0,
+								 weapon->poison_grow_1,
+								 weapon->poison_grow_2,
+								 weapon->poison_grow_3,
+								 weapon->poison_grow_4,
+								 weapon->poison_adjustment_pt_grow_0,
+								 weapon->poison_adjustment_pt_grow_1,
+								 weapon->poison_adjustment_pt_grow_2,
+								 weapon->poison_adjustment_pt_grow_3,
+								 weapon->poison_adjustment_pt_grow_4);
+  } else if (weapon->pass3_poison > 0) {
+	status[0] = CalculatePassive(weapon->pass3_poison,
+								 attribute_tuple.arcane,
+								 weapon->correction_arc,
+								 weapon->correction_pct_arc,
+								 weapon->poison_stat_max_0,
+								 weapon->poison_stat_max_1,
+								 weapon->poison_stat_max_2,
+								 weapon->poison_stat_max_3,
+								 weapon->poison_stat_max_4,
+								 weapon->poison_grow_0,
+								 weapon->poison_grow_1,
+								 weapon->poison_grow_2,
+								 weapon->poison_grow_3,
+								 weapon->poison_grow_4,
+								 weapon->poison_adjustment_pt_grow_0,
+								 weapon->poison_adjustment_pt_grow_1,
+								 weapon->poison_adjustment_pt_grow_2,
+								 weapon->poison_adjustment_pt_grow_3,
+								 weapon->poison_adjustment_pt_grow_4);
+  }
+
+  // Bleed Scaling
+  if (weapon->pass1_bleed > 0) {
+	status[1] = CalculatePassive(weapon->pass1_bleed,
+								 attribute_tuple.arcane,
+								 weapon->correction_arc,
+								 weapon->correction_pct_arc,
+								 weapon->bleed_stat_max_0,
+								 weapon->bleed_stat_max_1,
+								 weapon->bleed_stat_max_2,
+								 weapon->bleed_stat_max_3,
+								 weapon->bleed_stat_max_4,
+								 weapon->bleed_grow_0,
+								 weapon->bleed_grow_1,
+								 weapon->bleed_grow_2,
+								 weapon->bleed_grow_3,
+								 weapon->bleed_grow_4,
+								 weapon->bleed_adjustment_pt_grow_0,
+								 weapon->bleed_adjustment_pt_grow_1,
+								 weapon->bleed_adjustment_pt_grow_2,
+								 weapon->bleed_adjustment_pt_grow_3,
+								 weapon->bleed_adjustment_pt_grow_4);
+  } else if (weapon->pass2_bleed > 0) {
+	status[1] = CalculatePassive(weapon->pass2_bleed,
+								 attribute_tuple.arcane,
+								 weapon->correction_arc,
+								 weapon->correction_pct_arc,
+								 weapon->bleed_stat_max_0,
+								 weapon->bleed_stat_max_1,
+								 weapon->bleed_stat_max_2,
+								 weapon->bleed_stat_max_3,
+								 weapon->bleed_stat_max_4,
+								 weapon->bleed_grow_0,
+								 weapon->bleed_grow_1,
+								 weapon->bleed_grow_2,
+								 weapon->bleed_grow_3,
+								 weapon->bleed_grow_4,
+								 weapon->bleed_adjustment_pt_grow_0,
+								 weapon->bleed_adjustment_pt_grow_1,
+								 weapon->bleed_adjustment_pt_grow_2,
+								 weapon->bleed_adjustment_pt_grow_3,
+								 weapon->bleed_adjustment_pt_grow_4);
+  } else if (weapon->pass3_bleed) {
+	status[1] = CalculatePassive(weapon->pass3_bleed,
+								 attribute_tuple.arcane,
+								 weapon->correction_arc,
+								 weapon->correction_pct_arc,
+								 weapon->bleed_stat_max_0,
+								 weapon->bleed_stat_max_1,
+								 weapon->bleed_stat_max_2,
+								 weapon->bleed_stat_max_3,
+								 weapon->bleed_stat_max_4,
+								 weapon->bleed_grow_0,
+								 weapon->bleed_grow_1,
+								 weapon->bleed_grow_2,
+								 weapon->bleed_grow_3,
+								 weapon->bleed_grow_4,
+								 weapon->bleed_adjustment_pt_grow_0,
+								 weapon->bleed_adjustment_pt_grow_1,
+								 weapon->bleed_adjustment_pt_grow_2,
+								 weapon->bleed_adjustment_pt_grow_3,
+								 weapon->bleed_adjustment_pt_grow_4);
+  }
+
+  // Frostbite
+  if (weapon->pass1_frost > 0)
+	status[2] = weapon->pass1_frost;
+  else if (weapon->pass2_frost > 0)
+	status[2] = weapon->pass2_frost;
+  else if (weapon->pass3_frost > 0)
+	status[2] = weapon->pass3_frost;
+
+  // Sleep
+  if (weapon->pass1_sleep > 0)
+	status[3] = weapon->pass1_sleep;
+  else if (weapon->pass2_sleep > 0)
+	status[3] = weapon->pass2_sleep;
+  else if (weapon->pass3_sleep > 0)
+	status[3] = weapon->pass3_sleep;
+
+  // Madness
+  if (weapon->pass1_madness > 0)
+	status[4] = weapon->pass1_madness;
+  else if (weapon->pass2_madness > 0)
+	status[4] = weapon->pass2_madness;
+  else if (weapon->pass3_madness > 0)
+	status[4] = weapon->pass3_madness;
+
+  // Scarlet Rot
+  if (weapon->pass1_scarlet_rot > 0)
+	status[5] = weapon->pass1_scarlet_rot;
+  else if (weapon->pass2_scarlet_rot > 0)
+	status[5] = weapon->pass2_scarlet_rot;
+  else if (weapon->pass3_scarlet_rot > 0)
+	status[5] = weapon->pass3_scarlet_rot;
+
+  // You see what I did here? I thought it was clever.
+  return status[optimization_type - OPTIMIZATION_TYPE::STATUS_POISON];
 }
 
 // Set main hand and off hand weapon skills.
@@ -1128,8 +1366,6 @@ double ERBuildOptimizer::CalculateCorrectedDamage(const Weapon &selected_weapon,
 
   // Go through each attribute for the damage type being evaluated.
 
-  //int aec_bitmask = selected_weapon.attack_element_correct_bitmask;
-
   // Strength
   if (aec_bitmask & mask) {
 	corrected_damage +=
@@ -1165,38 +1401,102 @@ double ERBuildOptimizer::CalculateCorrectedDamage(const Weapon &selected_weapon,
   return corrected_damage;
 }
 
-void ERBuildOptimizer::EvaluateSkillDamage(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
-  // TODO
+// Determine which values to use for correction function
+inline double ERBuildOptimizer::CalculateCorrectFn(const double attribute,
+												   const int stat_max[],
+												   const int grow[],
+												   const double adj_pt_grow[]) {
+
+  // IF(B$2 > 80, ADD(90, MULTIPLY(20, DIVIDE(B$2 - 80, 70))),
+  // IF(B$2 > 60, ADD(75, MULTIPLY(15, DIVIDE(B$2 - 60, 20))),
+  // IF(B$2 > 18, ADD(25, MULTIPLY(50, MINUS(1, POW(MINUS(1, DIVIDE(B$2 - 18, 42)), 1.2)))),
+  // MULTIPLY(25, POW(DIVIDE(B$2 - 1, 17), 1.2))))),
+
+  // Determine which max, grow, and adj_pt_grow values to use
+  if (attribute > stat_max[3])
+	return CalcCorrectFnInner(attribute, stat_max[3], stat_max[4], grow[3], grow[4], adj_pt_grow[3]);
+  else if (attribute > stat_max[2])
+	return CalcCorrectFnInner(attribute, stat_max[2], stat_max[3], grow[2], grow[3], adj_pt_grow[2]);
+  else if (attribute > stat_max[1])
+	return CalcCorrectFnInner(attribute, stat_max[1], stat_max[2], grow[1], grow[2], adj_pt_grow[1]);
+  else
+	return CalcCorrectFnInner(attribute, stat_max[0], stat_max[1], grow[0], grow[1], adj_pt_grow[0]);
 }
 
-// Evaluate by Poison Damage
-void ERBuildOptimizer::EvaluateStatusPoison(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
-
+// Inline portion of calc correction function. Separated out for readability.
+inline double ERBuildOptimizer::CalcCorrectFnInner(const double attribute,
+												   const int stat_max,
+												   const int stat_max_n,
+												   const int grow,
+												   const int grow_n,
+												   const double adj_grow) {
+  if (adj_grow < 0)
+	return grow + (grow_n - grow) * (1 - pow(1 - (attribute - stat_max) / (double)(stat_max_n - stat_max), abs(adj_grow)));
+  else
+	return grow + (grow_n - grow) * pow((attribute - stat_max) / (double)(stat_max_n - stat_max), adj_grow);
 }
 
-// Evaluate by Bleed Damage
-void ERBuildOptimizer::EvaluateStatusBleed(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
+// Calculate weapon damage.
+void ERBuildOptimizer::CalcWeaponDamage(Weapon &weapon, const Tarnished &tarnished) const {
+  AttributeTuple attribute_tuple{
+	  .strength = tarnished.opt_strength,
+	  .dexterity = tarnished.opt_dexterity,
+	  .intelligence = tarnished.opt_intelligence,
+	  .faith = tarnished.opt_faith,
+	  .arcane = tarnished.opt_arcane
+  };
 
-}
+  CorrectionTuple scaling_tuple{
+	  .correction_str =  weapon.correction_str,
+	  .correction_dex =  weapon.correction_dex,
+	  .correction_int =  weapon.correction_int,
+	  .correction_fai =  weapon.correction_fai,
+	  .correction_arc =  weapon.correction_arc,
+  };
 
-// Evaluate by Frostbite Damage
-void ERBuildOptimizer::EvaluateStatusFrostbite(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
+  // Get physical damage.
+  weapon.max_physical_dmg = CalculateCorrectedDamage(weapon,
+													 attribute_tuple,
+													 scaling_tuple,
+													 DAMAGE_TYPE::PHYSICAL,
+													 weapon.damage_physical * weapon.damage_pct_physical,
+													 is_two_handing, weapon.attack_element_correct_bitmask);
 
-}
+  // Get magic damage.
+  weapon.max_magic_dmg = CalculateCorrectedDamage(weapon,
+												  attribute_tuple,
+												  scaling_tuple,
+												  DAMAGE_TYPE::MAGIC,
+												  weapon.damage_magic * weapon.damage_pct_magic,
+												  is_two_handing, weapon.attack_element_correct_bitmask);
 
-// Evaluate by Sleep Damage
-void ERBuildOptimizer::EvaluateStatusSleep(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
+  // Get fire damage.
+  weapon.max_fire_dmg = CalculateCorrectedDamage(weapon,
+												 attribute_tuple,
+												 scaling_tuple,
+												 DAMAGE_TYPE::FIRE,
+												 weapon.damage_fire * weapon.damage_pct_fire,
+												 is_two_handing, weapon.attack_element_correct_bitmask);
 
-}
+  // Get lightning damage.
+  weapon.max_lightning_dmg = CalculateCorrectedDamage(weapon,
+													  attribute_tuple,
+													  scaling_tuple,
+													  DAMAGE_TYPE::LIGHTNING,
+													  weapon.damage_lightning * weapon.damage_pct_lightning,
+													  is_two_handing, weapon.attack_element_correct_bitmask);
 
-// Evaluate by Madness Damage
-void ERBuildOptimizer::EvaluateStatusMadness(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
+  // Get holy damage.
+  weapon.max_holy_dmg = CalculateCorrectedDamage(weapon,
+												 attribute_tuple,
+												 scaling_tuple,
+												 DAMAGE_TYPE::HOLY,
+												 weapon.damage_holy * weapon.damage_pct_holy,
+												 is_two_handing, weapon.attack_element_correct_bitmask);
 
-}
-
-// Evaluate by Scarlet Rot Damage
-void ERBuildOptimizer::EvaluateStatusScarletRot(const AttributeTuple &attribute_tuple, ERBuildOptimizer &er) {
-
+  // Get total damage.
+  weapon.max_total_dmg =
+	  weapon.max_physical_dmg + weapon.max_magic_dmg + weapon.max_fire_dmg + weapon.max_lightning_dmg + weapon.max_holy_dmg;
 }
 
 // Determine weapon skill scaling. Most skills utilize default weapon scaling, but some do not.
@@ -1222,7 +1522,6 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 		scaling_tuple.correction_str = skill.overwrite_fai_correct_magic != -1 ? skill.overwrite_fai_correct_magic : weapon.correction_fai;
 		scaling_tuple.correction_str = skill.overwrite_arc_correct_magic != -1 ? skill.overwrite_arc_correct_magic : weapon.correction_arc;
 		break;
-
 	  case DAMAGE_TYPE::FIRE:
 		scaling_tuple.correction_str = skill.overwrite_str_correct_fire != -1 ? skill.overwrite_str_correct_fire : weapon.correction_str;
 		scaling_tuple.correction_str = skill.overwrite_dex_correct_fire != -1 ? skill.overwrite_dex_correct_fire : weapon.correction_dex;
@@ -1230,7 +1529,6 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 		scaling_tuple.correction_str = skill.overwrite_fai_correct_fire != -1 ? skill.overwrite_fai_correct_fire : weapon.correction_fai;
 		scaling_tuple.correction_str = skill.overwrite_arc_correct_fire != -1 ? skill.overwrite_arc_correct_fire : weapon.correction_arc;
 		break;
-
 	  case DAMAGE_TYPE::LIGHTNING:
 		scaling_tuple.correction_str = skill.overwrite_str_correct_lightning != -1 ? skill.overwrite_str_correct_lightning : weapon
 			.correction_str;
@@ -1243,7 +1541,6 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 		scaling_tuple.correction_str =
 			skill.overwrite_arc_correct_lightning != -1 ? skill.overwrite_arc_correct_lightning : weapon.correction_arc;
 		break;
-
 	  case DAMAGE_TYPE::HOLY:
 		scaling_tuple.correction_str = skill.overwrite_str_correct_holy != -1 ? skill.overwrite_str_correct_holy : weapon.correction_str;
 		scaling_tuple.correction_str = skill.overwrite_dex_correct_holy != -1 ? skill.overwrite_dex_correct_holy : weapon.correction_dex;
@@ -1251,7 +1548,6 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 		scaling_tuple.correction_str = skill.overwrite_fai_correct_holy != -1 ? skill.overwrite_fai_correct_holy : weapon.correction_fai;
 		scaling_tuple.correction_str = skill.overwrite_arc_correct_holy != -1 ? skill.overwrite_arc_correct_holy : weapon.correction_arc;
 		break;
-
 	  default:
 		scaling_tuple.correction_str = skill.overwrite_str_correct_phys != -1 ? skill.overwrite_str_correct_phys : weapon.correction_str;
 		scaling_tuple.correction_str = skill.overwrite_dex_correct_phys != -1 ? skill.overwrite_dex_correct_phys : weapon.correction_dex;
@@ -1261,66 +1557,6 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 		break;
 	}
   }
-}
-void ERBuildOptimizer::CalcWeaponDamage(Weapon &weapon, const Tarnished &tarnished) {
-  // 0: total, 1: physical, 2: magic, 3: fire, 4: lightning, 5: holy
-  double damage[6]{0, 0, 0, 0, 0, 0};
-
-  CorrectionTuple scaling_tuple{
-	  .correction_str =  weapon.correction_str,
-	  .correction_dex =  weapon.correction_dex,
-	  .correction_int =  weapon.correction_int,
-	  .correction_fai =  weapon.correction_fai,
-	  .correction_arc =  weapon.correction_arc,
-  };
-
-  // Get physical damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_PHYSICAL] = CalculateCorrectedDamage(weapon,
-																		attribute_tuple,
-																		scaling_tuple,
-																		DAMAGE_TYPE::PHYSICAL,
-																		weapon.damage_physical * weapon.damage_pct_physical,
-																		is_two_handing, weapon.attack_element_correct_bitmask);
-
-  // Get magic damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_MAGIC] = CalculateCorrectedDamage(weapon,
-																	 attribute_tuple,
-																	 scaling_tuple,
-																	 DAMAGE_TYPE::MAGIC,
-																	 weapon.damage_magic * weapon.damage_pct_magic,
-																	 is_two_handing, weapon.attack_element_correct_bitmask);
-
-  // Get fire damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_FIRE] = CalculateCorrectedDamage(weapon,
-																	attribute_tuple,
-																	scaling_tuple,
-																	DAMAGE_TYPE::FIRE,
-																	weapon.damage_fire * weapon.damage_pct_fire,
-																	is_two_handing, weapon.attack_element_correct_bitmask);
-
-  // Get lightning damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_LIGHTNING] = CalculateCorrectedDamage(weapon,
-																		 attribute_tuple,
-																		 scaling_tuple,
-																		 DAMAGE_TYPE::LIGHTNING,
-																		 weapon.damage_lightning * weapon.damage_pct_lightning,
-																		 is_two_handing, weapon.attack_element_correct_bitmask);
-
-  // Get holy damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_HOLY] = CalculateCorrectedDamage(weapon,
-																	attribute_tuple,
-																	scaling_tuple,
-																	DAMAGE_TYPE::HOLY,
-																	weapon.damage_holy * weapon.damage_pct_holy,
-																	is_two_handing, weapon.attack_element_correct_bitmask);
-
-  // Get total damage.
-  damage[OPTIMIZATION_TYPE::DAMAGE_TOTAL] =
-	  damage[OPTIMIZATION_TYPE::DAMAGE_PHYSICAL] + damage[OPTIMIZATION_TYPE::DAMAGE_MAGIC] + damage[OPTIMIZATION_TYPE::DAMAGE_FIRE]
-		  + damage[OPTIMIZATION_TYPE::DAMAGE_LIGHTNING] + damage[OPTIMIZATION_TYPE::DAMAGE_HOLY];
-
-  // Return the desired damage type.
-  return damage[optimization_type];
 }
 
 
