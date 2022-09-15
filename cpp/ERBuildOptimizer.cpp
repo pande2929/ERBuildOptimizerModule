@@ -770,6 +770,7 @@ void ERBuildOptimizer::Optimize() {
 			optimal_character.opt_arcane = attribute_tuple.arcane;
 
 			highest_result = result;
+			calculation_result = CALC_SUCCESS;
 		}
 	}
 
