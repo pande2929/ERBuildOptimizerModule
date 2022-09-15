@@ -8,10 +8,10 @@ using namespace std;
 // Tarnished model
 struct Tarnished {
 	// Default constructor
-	Tarnished() {}
+	Tarnished() = default;
 
 	// Base attributes
-	string name = "";
+	string name;
 	int base_strength = 0;
 	int base_dexterity = 0;
 	int base_intelligence = 0;
@@ -38,12 +38,12 @@ struct Tarnished {
 struct Weapon {
 
 	// Default constructor
-	Weapon() {}
+	Weapon() = default;
 
 	int id = 0;
-	string name = "";
-	string weapon_type = "";
-	string origin_weapon = "";
+	string name;
+	string weapon_type;
+	string origin_weapon;
 
 	// Base Damage
 	int damage_physical = 0;
@@ -67,7 +67,7 @@ struct Weapon {
 	int correction_arc = 0;
 
 	// Bitmask
-	string attack_element_correct_bitmask_str = "";
+	string attack_element_correct_bitmask_str;
 	int attack_element_correct_bitmask = 0;
 
 	// Reinforcement Values
@@ -258,7 +258,7 @@ struct Weapon {
 // WeaponSkill model
 struct WeaponSkill {
 	int id = 0;
-	string name = "";
+	string name;
 	int weapon_id = 0;
 	int atk_correct_physical = 0;
 	int atk_correct_magic = 0;

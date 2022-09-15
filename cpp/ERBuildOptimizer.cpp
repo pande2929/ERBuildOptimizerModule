@@ -7,7 +7,7 @@
 using namespace std;
 
 // Populate passive status effects. Poison and bleed usually scale with ARC, but all others only scale with stones.
-void ERBuildOptimizer::CalcPassives(Weapon &weapon) {
+void ERBuildOptimizer::CalcPassives(Weapon &weapon) const {
 	// Bleed Scaling
 	if (weapon.pass1_bleed > 0) {
 		weapon.max_bleed = CalculatePassive(weapon.pass1_bleed,
@@ -225,7 +225,7 @@ void ERBuildOptimizer::CalcWeaponSkill(const Weapon &selected_weapon, const Tarn
 		tarnished.opt_arcane
 	};
 
-	CorrectionTuple scaling_tuple;
+	CorrectionTuple scaling_tuple{};
 
 	GetWeaponSkillScaling(selected_weapon, selected_skill, scaling_tuple, DAMAGE_TYPE::PHYSICAL);
 
@@ -599,7 +599,7 @@ inline int ERBuildOptimizer::ConvertBitMask(const std::string &mask) {
 // Entry point for the optimization work.
 void ERBuildOptimizer::Optimize() {
 	// Build min-max subset constraints.
-	// Mins must be: greatest of the attr_req mainhand, attr_req offhand, and attr_base in class
+	// Mins must be: greatest of the attr_req main hand, attr_req offhand, and attr_base in class
 	// Maxes can either go up to 99, OR min + 1 if not a scaling (correction > 0) attribute.
 
 	int min_max[5][2]{};
@@ -790,7 +790,7 @@ void ERBuildOptimizer::Optimize() {
 // Determine which evaluation function should be used, based on the selected optimization type.
 std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> ERBuildOptimizer::GetOptEvaluator(OPTIMIZATION_TYPE optimization_type) {
 	// Weapon attack
-	if (optimization_type >= OPTIMIZATION_TYPE::DAMAGE_TOTAL <= OPTIMIZATION_TYPE::DAMAGE_HOLY) {
+	if (optimization_type >= OPTIMIZATION_TYPE::DAMAGE_TOTAL && optimization_type <= OPTIMIZATION_TYPE::DAMAGE_HOLY) {
 		return EvaluateWeaponDamage;
 	}
 
@@ -899,7 +899,7 @@ double ERBuildOptimizer::EvaluateSkillDamage(const AttributeTuple &attribute_tup
 	// Determine if the two-handed attack bonus is applied.
 	bool two_hand_bonus = er.is_two_handing && !skill->disable_2h_atk_bonus;
 
-	CorrectionTuple scaling_tuple;
+	CorrectionTuple scaling_tuple{};
 
 	GetWeaponSkillScaling(*weapon, *skill, scaling_tuple, DAMAGE_TYPE::PHYSICAL);
 

@@ -38,19 +38,11 @@ struct AttributeTuple {
 };
 
 struct CorrectionTuple {
-	int correction_str = 0;
-	int correction_dex = 0;
-	int correction_int = 0;
-	int correction_fai = 0;
-	int correction_arc = 0;
-};
-
-struct CorrectionPctTuple {
-	double correct_pct_str = 0.0;
-	double correct_pct_dex = 0.0;
-	double correct_pct_int = 0.0;
-	double correct_pct_fai = 0.0;
-	double correct_pct_arc = 0.0;
+	int correction_str;
+	int correction_dex;
+	int correction_int;
+	int correction_fai;
+	int correction_arc;
 };
 
 // Build optimizer class.
@@ -103,11 +95,10 @@ private:
 
 	int target_level = 0;
 	bool is_two_handing = false;
-	int correct_bitmask = 0;
 	double highest_result = 0;
 	int calculation_result = CALC_PROCEED;
 
-	static double CalculatePassive(int base, const int arcane, int correction_arc, double correction_pct_arc, int stat_max_0,
+	static double CalculatePassive(int base, int arcane, int correction_arc, double correction_pct_arc, int stat_max_0,
 								   int stat_max_1, int stat_max_2, int stat_max_3, int stat_max_4, int grow_0,
 								   int grow_1, int grow_2, int grow_3, int grow_4, double adj_pt_grow_0,
 								   double adj_pt_grow_1, double adj_pt_grow_2, double adj_pt_grow_3,
@@ -117,10 +108,10 @@ private:
 	static double EvaluateSkillDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
 	static double EvaluateStatusEffect(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
 
-	static std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> GetOptEvaluator(const OPTIMIZATION_TYPE optimization_type);
+	static std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> GetOptEvaluator(OPTIMIZATION_TYPE optimization_type);
 
 	void CalcWeaponDamage(Weapon &weapon, const Tarnished &tarnished) const;
-	void CalcPassives(Weapon &weapon);
+	void CalcPassives(Weapon &weapon) const;
 	void CalcWeaponSkill(const Weapon &weapon, const Tarnished &tarnished, WeaponSkill &selected_skill) const;
 	int Validate(const int min_max[][2]) const;
 	static double CalculateCorrectedDamage(const Weapon &selected_weapon,
@@ -149,7 +140,7 @@ public:
 	void SetWeapon(bool main_hand, const py::dict &w);
 	void SetWeaponSkill(bool main_hand, const py::dict &skill);
 	void Optimize();
-	int GetCalculationResult() const;
+	[[nodiscard]] int GetCalculationResult() const;
 };
 
 #endif // ERBUILD_OPTIMIZER_H
