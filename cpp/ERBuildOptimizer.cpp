@@ -762,7 +762,7 @@ void ERBuildOptimizer::Optimize() {
 		result = mh_result + oh_result;
 
 		// See if we have a new highest result.
-		if (result > highest_result) {
+		if (result > highest_result + EVAL_THRESHOLD) {
 			optimal_character.opt_strength = attribute_tuple.strength;
 			optimal_character.opt_dexterity = attribute_tuple.dexterity;
 			optimal_character.opt_intelligence = attribute_tuple.intelligence;

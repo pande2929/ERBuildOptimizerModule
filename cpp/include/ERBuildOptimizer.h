@@ -90,6 +90,8 @@ private:
 	static int const CALC_FAIL_LEVEL_HIGH = 1;
 	static int const CALC_FAIL_LEVEL_LOW = 2;
 
+	constexpr static double const EVAL_THRESHOLD = 1.0;
+
 	bool using_main_hand = false;
 	bool using_off_hand = false;
 
