@@ -745,9 +745,9 @@ void ERBuildOptimizer::Optimize() {
 		return;
 
 	// Validate optimization type. We can't optimize for say, fire damage, if the weapon doesn't scale with fire.
-	//calculation_result = ValidateOptimization();
-	//if (calculation_result != CALC_PROCEED)
-	//	return;
+	calculation_result = ValidateOptimization();
+	if (calculation_result != CALC_PROCEED)
+		return;
 
 
 	// Determine the upper limit of attribute points that will be spread between STR, DEX, INT, FAI, and ARC
@@ -1685,6 +1685,9 @@ int ERBuildOptimizer::ValidateOptimization() const {
 		case OPTIMIZATION_TYPE::DAMAGE_SKILL:
 			if (mh_skill.id != 0)
 				return CALC_PROCEED;
+		default:
+			return CALC_PROCEED;
+			break;
 		}
 	}
 
@@ -1737,6 +1740,9 @@ int ERBuildOptimizer::ValidateOptimization() const {
 		case OPTIMIZATION_TYPE::DAMAGE_SKILL:
 			if (oh_skill.id != 0)
 				return CALC_PROCEED;
+		default:
+			return CALC_PROCEED;
+			break;
 		}
 	}
 
