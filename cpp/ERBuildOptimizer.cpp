@@ -777,6 +777,32 @@ void ERBuildOptimizer::Optimize() {
 	if (calculation_result != CALC_SUCCESS) {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
 		calculation_result = CALC_FAIL_NULL_RESULT;
+
+		mh_weapon.max_total_dmg = 0.0;
+		mh_weapon.max_physical_dmg = 0.0;
+		mh_weapon.max_magic_dmg = 0.0;
+		mh_weapon.max_fire_dmg = 0.0;
+		mh_weapon.max_lightning_dmg = 0.0;
+		mh_weapon.max_holy_dmg = 0.0;
+		mh_weapon.max_poison = 0.0;
+		mh_weapon.max_bleed = 0.0;
+		mh_weapon.max_frostbite = 0.0;
+		mh_weapon.max_sleep = 0.0;
+		mh_weapon.max_madness = 0.0;
+		mh_weapon.max_scarlet_rot = 0.0;
+
+		oh_weapon.max_total_dmg = 0.0;
+		oh_weapon.max_physical_dmg = 0.0;
+		oh_weapon.max_magic_dmg = 0.0;
+		oh_weapon.max_fire_dmg = 0.0;
+		oh_weapon.max_lightning_dmg = 0.0;
+		oh_weapon.max_holy_dmg = 0.0;
+		oh_weapon.max_poison = 0.0;
+		oh_weapon.max_bleed = 0.0;
+		oh_weapon.max_frostbite = 0.0;
+		oh_weapon.max_sleep = 0.0;
+		oh_weapon.max_madness = 0.0;
+		oh_weapon.max_scarlet_rot = 0.0;
 	}
 
 	// Calculate resultant stats.
