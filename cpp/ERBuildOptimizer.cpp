@@ -807,7 +807,7 @@ void ERBuildOptimizer::Optimize() {
 
 	if (calculation_result != CALC_SUCCESS) {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
-		calculation_result = CALC_FAIL_NULL_RESULT;
+		//calculation_result = CALC_FAIL_NULL_RESULT;
 	}
 
 	// Calculate resultant stats.
