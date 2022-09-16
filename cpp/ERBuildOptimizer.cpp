@@ -1685,6 +1685,7 @@ int ERBuildOptimizer::ValidateOptimization() const {
 		case OPTIMIZATION_TYPE::DAMAGE_SKILL:
 			if (mh_skill.id != 0)
 				return CALC_PROCEED;
+			break;
 		default:
 			return CALC_PROCEED;
 			break;
@@ -1740,6 +1741,7 @@ int ERBuildOptimizer::ValidateOptimization() const {
 		case OPTIMIZATION_TYPE::DAMAGE_SKILL:
 			if (oh_skill.id != 0)
 				return CALC_PROCEED;
+			break;
 		default:
 			return CALC_PROCEED;
 			break;
