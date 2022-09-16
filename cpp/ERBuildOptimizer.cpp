@@ -1640,6 +1640,7 @@ int ERBuildOptimizer::ValidateOptimization() const {
 		switch (mh_optimization_type) {
 		case OPTIMIZATION_TYPE::DAMAGE_PHYSICAL:
 			if (mh_weapon.attack_element_correct_bitmask & PH_STR || mh_weapon.attack_element_correct_bitmask & PH_DEX || mh_weapon.attack_element_correct_bitmask & PH_INT || mh_weapon.attack_element_correct_bitmask & PH_FAI  || mh_weapon.attack_element_correct_bitmask & PH_ARC)
+				cout << "DAMAGE_PHYSICAL" << endl;
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_MAGIC:
