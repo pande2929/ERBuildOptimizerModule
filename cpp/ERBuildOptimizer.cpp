@@ -740,10 +740,14 @@ void ERBuildOptimizer::Optimize() {
 	// 1. Scaling attribute maximums and VIG, MIND, END will always be less than target level. (Target level too high.)
 	// 2. Scaling attribute minimums and VIG, MIND, END will always be greater than target level. (Target level too low.)
 	// 3. A range of scaling attributes exists that can equal target level.
-	if (Validate(min_max) != CALC_PROCEED || ValidateOptimization() != CALC_PROCEED)
+	calculation_result = Validate(min_max);
+	if (calculation_result != CALC_PROCEED)
 		return;
 
-	calculation_result = CALC_PROCEED;
+	// Validate optimization type. We can't optimize for say, fire damage, if the weapon doesn't scale with fire.
+	calculation_result = ValidateOptimization();
+	if (calculation_result != CALC_PROCEED)
+		return;
 
 	// Determine the upper limit of attribute points that will be spread between STR, DEX, INT, FAI, and ARC
 	int subset_target = target_level + LEVEL_OFFSET - optimal_character.vigor - optimal_character.mind - optimal_character.endurance;
@@ -785,6 +789,7 @@ void ERBuildOptimizer::Optimize() {
 			oh_result = oh_eval_func(attribute_tuple, true, *this);
 		}
 
+		// Add both weapon results together.
 		result = mh_result + oh_result;
 
 		// See if we have a new highest result.
@@ -1630,7 +1635,6 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 
 // Validate that we're not optimizing for a non-scaling damage type.
 int ERBuildOptimizer::ValidateOptimization() const {
-
 	if (using_main_hand) {
 		switch (mh_optimization_type) {
 		case OPTIMIZATION_TYPE::DAMAGE_PHYSICAL:

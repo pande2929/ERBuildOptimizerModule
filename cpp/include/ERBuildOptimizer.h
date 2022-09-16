@@ -100,7 +100,7 @@ private:
 	int target_level = 0;
 	bool is_two_handing = false;
 	double highest_result = 0;
-	int calculation_result = CALC_PROCEED;
+	int calculation_result;
 
 	static double CalculatePassive(int base, int arcane, int correction_arc, double correction_pct_arc, int stat_max_0,
 								   int stat_max_1, int stat_max_2, int stat_max_3, int stat_max_4, int grow_0,
