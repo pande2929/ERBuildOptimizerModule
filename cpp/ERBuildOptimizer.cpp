@@ -165,6 +165,19 @@ void ERBuildOptimizer::CalcPassives(Weapon &weapon) const {
 		weapon.max_scarlet_rot = weapon.pass2_scarlet_rot;
 	else if (weapon.pass3_scarlet_rot > 0)
 		weapon.max_scarlet_rot = weapon.pass3_scarlet_rot;
+
+	if (isnan(weapon.max_poison))
+		weapon.max_poison = 0;
+	if (isnan(weapon.max_bleed))
+		weapon.max_bleed = 0;
+	if (isnan(weapon.max_frostbite))
+		weapon.max_frostbite = 0;
+	if (isnan(weapon.max_sleep))
+		weapon.max_sleep = 0;
+	if (isnan(weapon.max_madness))
+		weapon.max_madness = 0;
+	if (isnan(weapon.max_scarlet_rot))
+		weapon.max_scarlet_rot = 0;
 }
 
 // Calculate a passive effect
@@ -280,6 +293,18 @@ void ERBuildOptimizer::CalcWeaponSkill(const Weapon &selected_weapon, const Tarn
 								 base_damage_holy,
 								 two_hand_bonus,
 								 selected_weapon.attack_element_correct_bitmask);
+
+	// Check for NaNs
+	if (isnan(damage_physical))
+		damage_physical= 0;
+	if (isnan(damage_magic))
+		damage_magic= 0;
+	if (isnan(damage_fire))
+		damage_fire = 0;
+	if (isnan(damage_lightning))
+		damage_lightning = 0;
+	if (isnan(damage_holy))
+		damage_holy = 0;
 
 	selected_skill.max_physical_dmg = damage_physical;
 	selected_skill.max_magic_dmg = damage_magic;
@@ -777,33 +802,6 @@ void ERBuildOptimizer::Optimize() {
 	if (calculation_result != CALC_SUCCESS) {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
 		calculation_result = CALC_FAIL_NULL_RESULT;
-
-		/*
-		mh_weapon.max_total_dmg = 0.0;
-		mh_weapon.max_physical_dmg = 0.0;
-		mh_weapon.max_magic_dmg = 0.0;
-		mh_weapon.max_fire_dmg = 0.0;
-		mh_weapon.max_lightning_dmg = 0.0;
-		mh_weapon.max_holy_dmg = 0.0;
-		mh_weapon.max_poison = 0.0;
-		mh_weapon.max_bleed = 0.0;
-		mh_weapon.max_frostbite = 0.0;
-		mh_weapon.max_sleep = 0.0;
-		mh_weapon.max_madness = 0.0;
-		mh_weapon.max_scarlet_rot = 0.0;
-
-		oh_weapon.max_total_dmg = 0.0;
-		oh_weapon.max_physical_dmg = 0.0;
-		oh_weapon.max_magic_dmg = 0.0;
-		oh_weapon.max_fire_dmg = 0.0;
-		oh_weapon.max_lightning_dmg = 0.0;
-		oh_weapon.max_holy_dmg = 0.0;
-		oh_weapon.max_poison = 0.0;
-		oh_weapon.max_bleed = 0.0;
-		oh_weapon.max_frostbite = 0.0;
-		oh_weapon.max_sleep = 0.0;
-		oh_weapon.max_madness = 0.0;
-		oh_weapon.max_scarlet_rot = 0.0;*/
 	}
 
 	// Calculate resultant stats.
@@ -1530,6 +1528,19 @@ void ERBuildOptimizer::CalcWeaponDamage(Weapon &weapon, const Tarnished &tarnish
 												   DAMAGE_TYPE::HOLY,
 												   weapon.damage_holy * weapon.damage_pct_holy,
 												   is_two_handing, weapon.attack_element_correct_bitmask);
+
+	// Check for NaNs
+	if (isnan(weapon.max_physical_dmg))
+		weapon.max_physical_dmg = 0;
+	if (isnan(weapon.max_magic_dmg))
+		weapon.max_magic_dmg = 0;
+	if (isnan(weapon.max_fire_dmg))
+		weapon.max_fire_dmg = 0;
+	if (isnan(weapon.max_lightning_dmg))
+		weapon.max_lightning_dmg = 0;
+	if (isnan(weapon.max_holy_dmg))
+		weapon.max_holy_dmg = 0;
+
 
 	// Get total damage.
 	weapon.max_total_dmg =
