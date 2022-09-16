@@ -740,9 +740,10 @@ void ERBuildOptimizer::Optimize() {
 	// 1. Scaling attribute maximums and VIG, MIND, END will always be less than target level. (Target level too high.)
 	// 2. Scaling attribute minimums and VIG, MIND, END will always be greater than target level. (Target level too low.)
 	// 3. A range of scaling attributes exists that can equal target level.
-	calculation_result = Validate(min_max);
-	if (calculation_result != CALC_PROCEED)
+	if (Validate(min_max) != CALC_PROCEED || ValidateOptimization() != CALC_PROCEED)
 		return;
+
+	calculation_result = CALC_PROCEED;
 
 	// Determine the upper limit of attribute points that will be spread between STR, DEX, INT, FAI, and ARC
 	int subset_target = target_level + LEVEL_OFFSET - optimal_character.vigor - optimal_character.mind - optimal_character.endurance;
@@ -1625,6 +1626,116 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 			break;
 		}
 	}
+}
+
+// Validate that we're not optimizing for a non-scaling damage type.
+int ERBuildOptimizer::ValidateOptimization() const {
+
+	if (using_main_hand) {
+		switch (mh_optimization_type) {
+		case OPTIMIZATION_TYPE::DAMAGE_PHYSICAL:
+			if (mh_weapon.attack_element_correct_bitmask & PH_STR || mh_weapon.attack_element_correct_bitmask & PH_DEX || mh_weapon.attack_element_correct_bitmask & PH_INT || mh_weapon.attack_element_correct_bitmask & PH_FAI  || mh_weapon.attack_element_correct_bitmask & PH_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_MAGIC:
+			if (mh_weapon.attack_element_correct_bitmask & MA_STR || mh_weapon.attack_element_correct_bitmask & MA_DEX || mh_weapon.attack_element_correct_bitmask & MA_INT || mh_weapon.attack_element_correct_bitmask & MA_FAI  || mh_weapon.attack_element_correct_bitmask & MA_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_FIRE:
+			if (mh_weapon.attack_element_correct_bitmask & FI_STR || mh_weapon.attack_element_correct_bitmask & FI_DEX || mh_weapon.attack_element_correct_bitmask & FI_INT || mh_weapon.attack_element_correct_bitmask & FI_FAI  || mh_weapon.attack_element_correct_bitmask & FI_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_LIGHTNING:
+			if (mh_weapon.attack_element_correct_bitmask & LI_STR || mh_weapon.attack_element_correct_bitmask & LI_DEX || mh_weapon.attack_element_correct_bitmask & LI_INT || mh_weapon.attack_element_correct_bitmask & PH_FAI  || mh_weapon.attack_element_correct_bitmask & LI_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_HOLY:
+			if (mh_weapon.attack_element_correct_bitmask & HO_STR || mh_weapon.attack_element_correct_bitmask & HO_DEX || mh_weapon.attack_element_correct_bitmask & HO_INT || mh_weapon.attack_element_correct_bitmask & HO_FAI  || mh_weapon.attack_element_correct_bitmask & HO_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_POISON:
+			if (mh_weapon.pass1_poison || mh_weapon.pass2_poison || mh_weapon.pass3_poison)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_BLEED:
+			if (mh_weapon.pass1_bleed || mh_weapon.pass2_bleed || mh_weapon.pass3_bleed)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_FROSTBITE:
+			if (mh_weapon.pass1_frost || mh_weapon.pass2_frost || mh_weapon.pass3_frost)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_SLEEP:
+			if (mh_weapon.pass1_sleep || mh_weapon.pass2_sleep || mh_weapon.pass3_sleep)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_MADNESS:
+			if (mh_weapon.pass1_madness || mh_weapon.pass2_madness || mh_weapon.pass3_madness)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_SCARLET_ROT:
+			if (mh_weapon.pass1_scarlet_rot || mh_weapon.pass2_scarlet_rot || mh_weapon.pass3_scarlet_rot)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_SKILL:
+			if (mh_skill.id != 0)
+				return CALC_PROCEED;
+		}
+	}
+
+	if (using_off_hand) {
+		switch (oh_optimization_type) {
+		case OPTIMIZATION_TYPE::DAMAGE_PHYSICAL:
+			if (oh_weapon.attack_element_correct_bitmask & PH_STR || oh_weapon.attack_element_correct_bitmask & PH_DEX || oh_weapon.attack_element_correct_bitmask & PH_INT || oh_weapon.attack_element_correct_bitmask & PH_FAI  || oh_weapon.attack_element_correct_bitmask & PH_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_MAGIC:
+			if (oh_weapon.attack_element_correct_bitmask & MA_STR || oh_weapon.attack_element_correct_bitmask & MA_DEX || oh_weapon.attack_element_correct_bitmask & MA_INT || oh_weapon.attack_element_correct_bitmask & MA_FAI  || oh_weapon.attack_element_correct_bitmask & MA_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_FIRE:
+			if (oh_weapon.attack_element_correct_bitmask & FI_STR || oh_weapon.attack_element_correct_bitmask & FI_DEX || oh_weapon.attack_element_correct_bitmask & FI_INT || oh_weapon.attack_element_correct_bitmask & FI_FAI  || oh_weapon.attack_element_correct_bitmask & FI_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_LIGHTNING:
+			if (oh_weapon.attack_element_correct_bitmask & LI_STR || oh_weapon.attack_element_correct_bitmask & LI_DEX || oh_weapon.attack_element_correct_bitmask & LI_INT || oh_weapon.attack_element_correct_bitmask & PH_FAI  || oh_weapon.attack_element_correct_bitmask & LI_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_HOLY:
+			if (oh_weapon.attack_element_correct_bitmask & HO_STR || oh_weapon.attack_element_correct_bitmask & HO_DEX || oh_weapon.attack_element_correct_bitmask & HO_INT || oh_weapon.attack_element_correct_bitmask & HO_FAI  || oh_weapon.attack_element_correct_bitmask & HO_ARC)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_POISON:
+			if (oh_weapon.pass1_poison || oh_weapon.pass2_poison || oh_weapon.pass3_poison)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_BLEED:
+			if (oh_weapon.pass1_bleed || oh_weapon.pass2_bleed || oh_weapon.pass3_bleed)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_FROSTBITE:
+			if (oh_weapon.pass1_frost || oh_weapon.pass2_frost || oh_weapon.pass3_frost)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_SLEEP:
+			if (oh_weapon.pass1_sleep || oh_weapon.pass2_sleep || oh_weapon.pass3_sleep)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_MADNESS:
+			if (oh_weapon.pass1_madness || oh_weapon.pass2_madness || oh_weapon.pass3_madness)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::STATUS_SCARLET_ROT:
+			if (oh_weapon.pass1_scarlet_rot || oh_weapon.pass2_scarlet_rot || oh_weapon.pass3_scarlet_rot)
+				return CALC_PROCEED;
+			break;
+		case OPTIMIZATION_TYPE::DAMAGE_SKILL:
+			if (oh_skill.id != 0)
+				return CALC_PROCEED;
+		}
+	}
+
+	return CALC_FAIL_INVALID_OPT;
 }
 
 

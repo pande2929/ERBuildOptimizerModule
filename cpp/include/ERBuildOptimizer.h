@@ -90,6 +90,7 @@ private:
 	static int const CALC_FAIL_LEVEL_HIGH = 1;
 	static int const CALC_FAIL_LEVEL_LOW = 2;
 	static int const CALC_FAIL_NULL_RESULT = 3;
+	static int const CALC_FAIL_INVALID_OPT = 4;
 
 	constexpr static double const EVAL_THRESHOLD = 1.0;
 
@@ -117,6 +118,7 @@ private:
 	void CalcPassives(Weapon &weapon) const;
 	void CalcWeaponSkill(const Weapon &weapon, const Tarnished &tarnished, WeaponSkill &selected_skill) const;
 	int Validate(const int min_max[][2]) const;
+	int ValidateOptimization() const;
 	static double CalculateCorrectedDamage(const Weapon &selected_weapon,
 										   const AttributeTuple &attribute_tuple,
 										   const CorrectionTuple &scaling_tuple,
