@@ -89,6 +89,7 @@ private:
 	static int const CALC_SUCCESS = 0;
 	static int const CALC_FAIL_LEVEL_HIGH = 1;
 	static int const CALC_FAIL_LEVEL_LOW = 2;
+	static int const CALC_FAIL_NULL_RESULT = 3;
 
 	constexpr static double const EVAL_THRESHOLD = 1.0;
 

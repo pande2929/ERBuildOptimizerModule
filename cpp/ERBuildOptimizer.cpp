@@ -774,6 +774,14 @@ void ERBuildOptimizer::Optimize() {
 		}
 	}
 
+	if (calculation_result != CALC_SUCCESS) {
+		// If we are here at this point, it means no solution was reached after trying every possible subset.
+		calculation_result = CALC_FAIL_NULL_RESULT;
+
+		cout << mh_weapon.damage_holy << endl;
+		cout << oh_weapon.damage_holy << endl;
+	}
+
 	// Calculate resultant stats.
 	if (using_main_hand) {
 		CalcWeaponDamage(mh_weapon, optimal_character);
