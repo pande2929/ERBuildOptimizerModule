@@ -740,16 +740,15 @@ void ERBuildOptimizer::Optimize() {
 	// 1. Scaling attribute maximums and VIG, MIND, END will always be less than target level. (Target level too high.)
 	// 2. Scaling attribute minimums and VIG, MIND, END will always be greater than target level. (Target level too low.)
 	// 3. A range of scaling attributes exists that can equal target level.
-	/*
 	calculation_result = Validate(min_max);
 	if (calculation_result != CALC_PROCEED)
 		return;
 
 	// Validate optimization type. We can't optimize for say, fire damage, if the weapon doesn't scale with fire.
-	calculation_result = ValidateOptimization();
-	if (calculation_result != CALC_PROCEED)
-		return;
-	*/
+	//calculation_result = ValidateOptimization();
+	//if (calculation_result != CALC_PROCEED)
+	//	return;
+
 
 	// Determine the upper limit of attribute points that will be spread between STR, DEX, INT, FAI, and ARC
 	int subset_target = target_level + LEVEL_OFFSET - optimal_character.vigor - optimal_character.mind - optimal_character.endurance;
