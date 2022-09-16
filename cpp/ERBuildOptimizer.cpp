@@ -740,6 +740,7 @@ void ERBuildOptimizer::Optimize() {
 	// 1. Scaling attribute maximums and VIG, MIND, END will always be less than target level. (Target level too high.)
 	// 2. Scaling attribute minimums and VIG, MIND, END will always be greater than target level. (Target level too low.)
 	// 3. A range of scaling attributes exists that can equal target level.
+	/*
 	calculation_result = Validate(min_max);
 	if (calculation_result != CALC_PROCEED)
 		return;
@@ -748,6 +749,7 @@ void ERBuildOptimizer::Optimize() {
 	calculation_result = ValidateOptimization();
 	if (calculation_result != CALC_PROCEED)
 		return;
+	*/
 
 	// Determine the upper limit of attribute points that will be spread between STR, DEX, INT, FAI, and ARC
 	int subset_target = target_level + LEVEL_OFFSET - optimal_character.vigor - optimal_character.mind - optimal_character.endurance;
@@ -807,7 +809,7 @@ void ERBuildOptimizer::Optimize() {
 
 	if (calculation_result != CALC_SUCCESS) {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
-		//calculation_result = CALC_FAIL_NULL_RESULT;
+		calculation_result = CALC_FAIL_NULL_RESULT;
 	}
 
 	// Calculate resultant stats.
