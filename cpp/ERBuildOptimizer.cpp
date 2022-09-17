@@ -760,12 +760,11 @@ void ERBuildOptimizer::Optimize() {
 	std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> mh_eval_func;
 	std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> oh_eval_func;
 
+	/*
 	if (using_main_hand)
 		mh_eval_func = GetOptEvaluator(mh_optimization_type);
 	if (using_main_hand)
-		oh_eval_func = GetOptEvaluator(oh_optimization_type);
-
-	cout << 1 << endl;
+		oh_eval_func = GetOptEvaluator(oh_optimization_type);*/
 
 	AttributeTuple attribute_tuple;
 	size_t solution_count = solution_sets.size();
@@ -786,10 +785,12 @@ void ERBuildOptimizer::Optimize() {
 
 		// Get main hand and off hand results separately.
 		if (using_main_hand) {
-			mh_result = mh_eval_func(attribute_tuple, true, *this);
+			//mh_result = mh_eval_func(attribute_tuple, true, *this);
+			mh_result = EvaluateWeaponDamage(attribute_tuple, true, *this);
 		}
 		if (using_off_hand) {
-			oh_result = oh_eval_func(attribute_tuple, true, *this);
+			//oh_result = oh_eval_func(attribute_tuple, true, *this);
+			oh_result = EvaluateWeaponDamage(attribute_tuple, true, *this);
 		}
 
 		// Add both weapon results together.
@@ -808,8 +809,6 @@ void ERBuildOptimizer::Optimize() {
 		}
 	}
 
-	cout << 2 << endl;
-
 	if (calculation_result != CALC_SUCCESS) {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
 		calculation_result = CALC_FAIL_NULL_RESULT;
@@ -824,11 +823,8 @@ void ERBuildOptimizer::Optimize() {
 
 	if (using_off_hand) {
 		CalcWeaponDamage(oh_weapon, optimal_character);
-		cout << 3 << endl;
 		CalcPassives(oh_weapon);
-		cout << 4 << endl;
 		CalcWeaponSkill(oh_weapon, optimal_character, oh_skill);
-		cout << 5 << endl;
 	}
 }
 
