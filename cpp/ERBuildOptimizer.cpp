@@ -1644,6 +1644,7 @@ int ERBuildOptimizer::ValidateOptimization() const {
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_MAGIC:
 			if (mh_weapon.attack_element_correct_bitmask & MA_STR || mh_weapon.attack_element_correct_bitmask & MA_DEX || mh_weapon.attack_element_correct_bitmask & MA_INT || mh_weapon.attack_element_correct_bitmask & MA_FAI  || mh_weapon.attack_element_correct_bitmask & MA_ARC)
+				cout << "DAMAGE_MAGIC" << endl;
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_FIRE:
@@ -1747,8 +1748,6 @@ int ERBuildOptimizer::ValidateOptimization() const {
 			break;
 		}
 	}
-
-	cout << CALC_FAIL_INVALID_OPT << endl;
 
 	return CALC_FAIL_INVALID_OPT;
 }
