@@ -1182,8 +1182,6 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 	skill.name = string(py::str(s["name"]));
 	skill.weapon_id = stoi(string(py::str(s["weapon_id"])));
 
-	cout << 1 << endl;
-
 	skill.atk_correct_physical = stoi(string(py::str(s["atk_correct_physical"])));
 	skill.atk_correct_magic = stoi(string(py::str(s["atk_correct_magic"])));
 	skill.atk_correct_fire = stoi(string(py::str(s["atk_correct_fire"])));
@@ -1191,13 +1189,9 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 	skill.atk_correct_holy = stoi(string(py::str(s["atk_correct_holy"])));
 	skill.atk_correct_stamina = stoi(string(py::str(s["atk_correct_stamina"])));
 
-	cout << 2 << endl;
-
 	skill.atk_correct_speffect_point = stoi(string(py::str(s["atk_correct_speffect_point"])));
 	skill.atk_correct_speffect_power = stoi(string(py::str(s["atk_correct_speffect_power"])));
 	skill.atk_correct_speffect_damage = stoi(string(py::str(s["atk_correct_speffect_damage"])));
-
-	cout << 3 << endl;
 
 	skill.atk_physical = stoi(string(py::str(s["atk_physical"])));
 	skill.atk_magic = stoi(string(py::str(s["atk_magic"])));
@@ -1206,15 +1200,11 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 	skill.atk_holy = stoi(string(py::str(s["atk_holy"])));
 	skill.atk_stamina = stoi(string(py::str(s["atk_stamina"])));
 
-	cout << 4 << endl;
-
 	skill.status_correct_point = stoi(string(py::str(s["status_correct_point"])));
 	skill.attack_element_correct_id = stoi(string(py::str(s["attack_element_correct_id"])));
 
 	skill.add_base_attack = stoi(string(py::str(s["add_base_attack"])));
 	skill.disable_2h_atk_bonus = stoi(string(py::str(s["disable_2h_atk_bonus"])));
-
-	cout << 5 << endl;
 
 	skill.sub_category1 = stoi(string(py::str(s["sub_category1"])));
 	skill.sub_category2 = stoi(string(py::str(s["sub_category2"])));
@@ -1225,23 +1215,13 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 	skill.target_speffect3 = stoi(string(py::str(s["target_speffect3"])));
 	skill.target_speffect4 = stoi(string(py::str(s["target_speffect4"])));
 
-	cout << 6 << endl;
-
 	skill.attack_element_correct_bitmask = stoi(string(py::str(s["attack_element_correct_bitmask"])));
-	cout << 1230 << endl;
 
 	skill.overwrite_str_correct_phys = stoi(string(py::str(s["overwrite_str_correct_phys"])));
-	cout << 1233 << endl;
 	skill.overwrite_dex_correct_phys = stoi(string(py::str(s["overwrite_dex_correct_phys"])));
-	cout << 1236 << endl;
 	skill.overwrite_int_correct_phys = stoi(string(py::str(s["overwrite_int_correct_phys"])));
-	cout << 1238 << endl;
 	skill.overwrite_fai_correct_phys = stoi(string(py::str(s["overwrite_fai_correct_phys"])));
-	cout << 1240 << endl;
 	skill.overwrite_arc_correct_phys = stoi(string(py::str(s["overwrite_arc_correct_phys"])));
-	cout << 1242 << endl;
-
-	cout << 7 << endl;
 
 	skill.overwrite_str_correct_magic = stoi(string(py::str(s["overwrite_str_correct_magic"])));
 	skill.overwrite_dex_correct_magic = stoi(string(py::str(s["overwrite_dex_correct_magic"])));
