@@ -1217,6 +1217,8 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 
 	skill.attack_element_correct_bitmask = stoi(string(py::str(s["attack_element_correct_bitmask"])));
 
+	cout << string(py::str(s["overwrite_str_correct_phys"])) << endl;
+
 	skill.overwrite_str_correct_phys = stoi(string(py::str(s["overwrite_str_correct_phys"])));
 	skill.overwrite_dex_correct_phys = stoi(string(py::str(s["overwrite_dex_correct_phys"])));
 	skill.overwrite_int_correct_phys = stoi(string(py::str(s["overwrite_int_correct_phys"])));
