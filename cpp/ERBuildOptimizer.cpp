@@ -790,7 +790,7 @@ void ERBuildOptimizer::Optimize() {
 		}
 		if (using_off_hand) {
 			//oh_result = oh_eval_func(attribute_tuple, true, *this);
-			oh_result = EvaluateWeaponDamage(attribute_tuple, true, *this);
+			oh_result = EvaluateWeaponDamage(attribute_tuple, false, *this);
 		}
 
 		// Add both weapon results together.
@@ -811,6 +811,7 @@ void ERBuildOptimizer::Optimize() {
 
 	if (calculation_result != CALC_SUCCESS) {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
+		// This shouldn't happen.
 		calculation_result = CALC_FAIL_NULL_RESULT;
 	}
 
