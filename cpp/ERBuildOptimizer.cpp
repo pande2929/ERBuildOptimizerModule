@@ -875,7 +875,7 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 										 attribute_tuple,
 										 scaling_tuple,
 										 DAMAGE_TYPE::PHYSICAL,
-										 weapon->damage_physical * weapon->damage_pct_physical,
+										 weapon->damage_physical *weapon->damage_pct_physical,
 										 er.is_two_handing, weapon->attack_element_correct_bitmask);
 
 	// Get magic damage.
@@ -883,7 +883,7 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 										 attribute_tuple,
 										 scaling_tuple,
 										 DAMAGE_TYPE::MAGIC,
-										 weapon->damage_magic * weapon->damage_pct_magic,
+										 weapon->damage_magic *weapon->damage_pct_magic,
 										 er.is_two_handing, weapon->attack_element_correct_bitmask);
 
 	// Get fire damage.
@@ -891,7 +891,7 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 										 attribute_tuple,
 										 scaling_tuple,
 										 DAMAGE_TYPE::FIRE,
-										 weapon->damage_fire * weapon->damage_pct_fire,
+										 weapon->damage_fire *weapon->damage_pct_fire,
 										 er.is_two_handing, weapon->attack_element_correct_bitmask);
 
 	// Get lightning damage.
@@ -899,7 +899,7 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 										 attribute_tuple,
 										 scaling_tuple,
 										 DAMAGE_TYPE::LIGHTNING,
-										 weapon->damage_lightning * weapon->damage_pct_lightning,
+										 weapon->damage_lightning *weapon->damage_pct_lightning,
 										 er.is_two_handing, weapon->attack_element_correct_bitmask);
 
 	// Get holy damage.
@@ -907,11 +907,13 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 										 attribute_tuple,
 										 scaling_tuple,
 										 DAMAGE_TYPE::HOLY,
-										 weapon->damage_holy * weapon->damage_pct_holy,
+										 weapon->damage_holy *weapon->damage_pct_holy,
 										 er.is_two_handing, weapon->attack_element_correct_bitmask);
 
 	// Get total damage.
 	damage[0] = damage[1] + damage[2] + damage[3] + damage[4] + damage[5];
+
+	cout << damage[0];
 
 	// Return the desired damage type.
 	return damage[optimization_type];
