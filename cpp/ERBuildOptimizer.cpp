@@ -913,8 +913,6 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 	// Get total damage.
 	damage[0] = damage[1] + damage[2] + damage[3] + damage[4] + damage[5];
 
-	cout << damage[0] << endl;
-
 	// Return the desired damage type.
 	return damage[optimization_type];
 }
