@@ -1639,24 +1639,44 @@ int ERBuildOptimizer::ValidateOptimization() const {
 	if (using_main_hand) {
 		switch (mh_optimization_type) {
 		case OPTIMIZATION_TYPE::DAMAGE_PHYSICAL:
-			if (mh_weapon.attack_element_correct_bitmask & PH_STR || mh_weapon.attack_element_correct_bitmask & PH_DEX || mh_weapon.attack_element_correct_bitmask & PH_INT || mh_weapon.attack_element_correct_bitmask & PH_FAI  || mh_weapon.attack_element_correct_bitmask & PH_ARC)
+			if (mh_weapon.attack_element_correct_bitmask & PH_STR ||
+				mh_weapon.attack_element_correct_bitmask & PH_DEX >> 1 ||
+				mh_weapon.attack_element_correct_bitmask & PH_INT >> 2 ||
+				mh_weapon.attack_element_correct_bitmask & PH_FAI >> 3 ||
+				mh_weapon.attack_element_correct_bitmask & PH_ARC >> 4)
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_MAGIC:
-			if (mh_weapon.attack_element_correct_bitmask & MA_STR || mh_weapon.attack_element_correct_bitmask & MA_DEX || mh_weapon.attack_element_correct_bitmask & MA_INT || mh_weapon.attack_element_correct_bitmask & MA_FAI  || mh_weapon.attack_element_correct_bitmask & MA_ARC)
+			if (mh_weapon.attack_element_correct_bitmask & MA_STR ||
+				mh_weapon.attack_element_correct_bitmask & MA_DEX >> 1 ||
+				mh_weapon.attack_element_correct_bitmask & MA_INT >> 2 ||
+				mh_weapon.attack_element_correct_bitmask & MA_FAI >> 3 ||
+				mh_weapon.attack_element_correct_bitmask & MA_ARC >> 4)
 				cout << "DAMAGE_MAGIC" << endl;
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_FIRE:
-			if (mh_weapon.attack_element_correct_bitmask & FI_STR || mh_weapon.attack_element_correct_bitmask & FI_DEX || mh_weapon.attack_element_correct_bitmask & FI_INT || mh_weapon.attack_element_correct_bitmask & FI_FAI  || mh_weapon.attack_element_correct_bitmask & FI_ARC)
+			if (mh_weapon.attack_element_correct_bitmask & FI_STR ||
+				mh_weapon.attack_element_correct_bitmask & FI_DEX >> 1 ||
+				mh_weapon.attack_element_correct_bitmask & FI_INT >> 2 ||
+				mh_weapon.attack_element_correct_bitmask & FI_FAI >> 3 ||
+				mh_weapon.attack_element_correct_bitmask & FI_ARC >> 4)
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_LIGHTNING:
-			if (mh_weapon.attack_element_correct_bitmask & LI_STR || mh_weapon.attack_element_correct_bitmask & LI_DEX || mh_weapon.attack_element_correct_bitmask & LI_INT || mh_weapon.attack_element_correct_bitmask & PH_FAI  || mh_weapon.attack_element_correct_bitmask & LI_ARC)
+			if (mh_weapon.attack_element_correct_bitmask & LI_STR ||
+				mh_weapon.attack_element_correct_bitmask & LI_DEX >> 1 ||
+				mh_weapon.attack_element_correct_bitmask & LI_INT >> 2 ||
+				mh_weapon.attack_element_correct_bitmask & PH_FAI >> 3 ||
+				mh_weapon.attack_element_correct_bitmask & LI_ARC >> 4)
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::DAMAGE_HOLY:
-			if (mh_weapon.attack_element_correct_bitmask & HO_STR || mh_weapon.attack_element_correct_bitmask & HO_DEX || mh_weapon.attack_element_correct_bitmask & HO_INT || mh_weapon.attack_element_correct_bitmask & HO_FAI  || mh_weapon.attack_element_correct_bitmask & HO_ARC)
+			if (mh_weapon.attack_element_correct_bitmask & HO_STR ||
+				mh_weapon.attack_element_correct_bitmask & HO_DEX >> 1 ||
+				mh_weapon.attack_element_correct_bitmask & HO_INT >> 2 ||
+				mh_weapon.attack_element_correct_bitmask & HO_FAI >> 3 ||
+				mh_weapon.attack_element_correct_bitmask & HO_ARC >> 4)
 				return CALC_PROCEED;
 			break;
 		case OPTIMIZATION_TYPE::STATUS_POISON:
