@@ -1217,36 +1217,36 @@ void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
 
 	skill.attack_element_correct_bitmask = stoi(string(py::str(s["attack_element_correct_bitmask"])));
 
-	cout << string(py::str(s["overwrite_str_correct_phys"])) << endl;
+	// Correction overwrites (test for "None" types from Python model
+	skill.overwrite_str_correct_phys = string(py::str(s["overwrite_str_correct_phys"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_str_correct_phys"])));
+	skill.overwrite_dex_correct_phys = string(py::str(s["overwrite_dex_correct_phys"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_dex_correct_phys"])));
+	skill.overwrite_int_correct_phys = string(py::str(s["overwrite_int_correct_phys"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_int_correct_phys"])));
+	skill.overwrite_fai_correct_phys = string(py::str(s["overwrite_fai_correct_phys"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_fai_correct_phys"])));
+	skill.overwrite_arc_correct_phys = string(py::str(s["overwrite_arc_correct_phys"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_arc_correct_phys"])));
 
-	skill.overwrite_str_correct_phys = stoi(string(py::str(s["overwrite_str_correct_phys"])));
-	skill.overwrite_dex_correct_phys = stoi(string(py::str(s["overwrite_dex_correct_phys"])));
-	skill.overwrite_int_correct_phys = stoi(string(py::str(s["overwrite_int_correct_phys"])));
-	skill.overwrite_fai_correct_phys = stoi(string(py::str(s["overwrite_fai_correct_phys"])));
-	skill.overwrite_arc_correct_phys = stoi(string(py::str(s["overwrite_arc_correct_phys"])));
+	skill.overwrite_str_correct_magic = string(py::str(s["overwrite_str_correct_magic"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_str_correct_magic"])));
+	skill.overwrite_dex_correct_magic = string(py::str(s["overwrite_dex_correct_magic"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_dex_correct_magic"])));
+	skill.overwrite_int_correct_magic = string(py::str(s["overwrite_int_correct_magic"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_int_correct_magic"])));
+	skill.overwrite_fai_correct_magic = string(py::str(s["overwrite_fai_correct_magic"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_fai_correct_magic"])));
+	skill.overwrite_arc_correct_magic = string(py::str(s["overwrite_arc_correct_magic"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_arc_correct_magic"])));
 
-	skill.overwrite_str_correct_magic = stoi(string(py::str(s["overwrite_str_correct_magic"])));
-	skill.overwrite_dex_correct_magic = stoi(string(py::str(s["overwrite_dex_correct_magic"])));
-	skill.overwrite_int_correct_magic = stoi(string(py::str(s["overwrite_int_correct_magic"])));
-	skill.overwrite_fai_correct_magic = stoi(string(py::str(s["overwrite_fai_correct_magic"])));
-	skill.overwrite_arc_correct_magic = stoi(string(py::str(s["overwrite_arc_correct_magic"])));
-	skill.overwrite_str_correct_fire = stoi(string(py::str(s["overwrite_str_correct_fire"])));
-	skill.overwrite_dex_correct_fire = stoi(string(py::str(s["overwrite_dex_correct_fire"])));
-	skill.overwrite_int_correct_fire = stoi(string(py::str(s["overwrite_int_correct_fire"])));
-	skill.overwrite_fai_correct_fire = stoi(string(py::str(s["overwrite_fai_correct_fire"])));
-	skill.overwrite_arc_correct_fire = stoi(string(py::str(s["overwrite_arc_correct_fire"])));
-	skill.overwrite_str_correct_lightning = stoi(string(py::str(s["overwrite_str_correct_lightning"])));
-	skill.overwrite_dex_correct_lightning = stoi(string(py::str(s["overwrite_dex_correct_lightning"])));
-	skill.overwrite_int_correct_lightning = stoi(string(py::str(s["overwrite_int_correct_lightning"])));
-	skill.overwrite_fai_correct_lightning = stoi(string(py::str(s["overwrite_fai_correct_lightning"])));
-	skill.overwrite_arc_correct_lightning = stoi(string(py::str(s["overwrite_arc_correct_lightning"])));
-	skill.overwrite_str_correct_holy = stoi(string(py::str(s["overwrite_str_correct_holy"])));
-	skill.overwrite_dex_correct_holy = stoi(string(py::str(s["overwrite_dex_correct_holy"])));
-	skill.overwrite_int_correct_holy = stoi(string(py::str(s["overwrite_int_correct_holy"])));
-	skill.overwrite_fai_correct_holy = stoi(string(py::str(s["overwrite_fai_correct_holy"])));
-	skill.overwrite_arc_correct_holy = stoi(string(py::str(s["overwrite_arc_correct_holy"])));
+	skill.overwrite_str_correct_fire = string(py::str(s["overwrite_str_correct_fire"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_str_correct_fire"])));
+	skill.overwrite_dex_correct_fire = string(py::str(s["overwrite_dex_correct_fire"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_dex_correct_fire"])));
+	skill.overwrite_int_correct_fire = string(py::str(s["overwrite_int_correct_fire"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_int_correct_fire"])));
+	skill.overwrite_fai_correct_fire = string(py::str(s["overwrite_fai_correct_fire"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_fai_correct_fire"])));
+	skill.overwrite_arc_correct_fire = string(py::str(s["overwrite_arc_correct_fire"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_arc_correct_fire"])));
 
-	cout << 8 << endl;
+	skill.overwrite_str_correct_lightning = string(py::str(s["overwrite_str_correct_lightning"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_str_correct_lightning"])));
+	skill.overwrite_dex_correct_lightning = string(py::str(s["overwrite_dex_correct_lightning"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_dex_correct_lightning"])));
+	skill.overwrite_int_correct_lightning = string(py::str(s["overwrite_int_correct_lightning"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_int_correct_lightning"])));
+	skill.overwrite_fai_correct_lightning = string(py::str(s["overwrite_fai_correct_lightning"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_fai_correct_lightning"])));
+	skill.overwrite_arc_correct_lightning = string(py::str(s["overwrite_arc_correct_lightning"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_arc_correct_lightning"])));
+
+	skill.overwrite_str_correct_holy = string(py::str(s["overwrite_str_correct_holy"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_str_correct_holy"])));
+	skill.overwrite_dex_correct_holy = string(py::str(s["overwrite_dex_correct_holy"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_dex_correct_holy"])));
+	skill.overwrite_int_correct_holy = string(py::str(s["overwrite_int_correct_holy"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_int_correct_holy"])));
+	skill.overwrite_fai_correct_holy = string(py::str(s["overwrite_fai_correct_holy"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_fai_correct_holy"])));
+	skill.overwrite_arc_correct_holy = string(py::str(s["overwrite_arc_correct_holy"])) == "None" ? -1 : stoi(string(py::str(s["overwrite_arc_correct_holy"])));
 
 	if (main_hand) {
 		mh_skill = skill;
