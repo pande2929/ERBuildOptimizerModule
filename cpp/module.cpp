@@ -8,7 +8,8 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(ERBuildOptimizerModule, m) {
 	py::class_<ERBuildOptimizer>(m, "ERBuildOptimizer", py::dynamic_attr())
-		.def(py::init<const int, const bool, const py::dict &, const int, const int>())
+		//.def(py::init<const int, const bool, const py::dict &, const int, const int>())
+		.def(py::init<const int, const bool, const py::dict &>())
 		.def("SetWeapon", &ERBuildOptimizer::SetWeapon)
 		.def("SetWeaponSkill", &ERBuildOptimizer::SetWeaponSkill)
 		.def_readwrite("mh_weapon", &ERBuildOptimizer::mh_weapon)
@@ -17,9 +18,9 @@ PYBIND11_MODULE(ERBuildOptimizerModule, m) {
 		.def_readwrite("mh_skill", &ERBuildOptimizer::mh_skill)
 		.def_readwrite("oh_skill", &ERBuildOptimizer::oh_skill)
 		.def("Optimize", &ERBuildOptimizer::Optimize)
-		.def_property_readonly("calculation_result", &ERBuildOptimizer::GetCalculationResult)
-		.def_readonly("mh_optimization_type", &ERBuildOptimizer::mh_optimization_type)
-		.def_readonly("oh_optimization_type", &ERBuildOptimizer::oh_optimization_type);
+		.def_property_readonly("calculation_result", &ERBuildOptimizer::GetCalculationResult);
+		//.def_readonly("mh_optimization_type", &ERBuildOptimizer::mh_optimization_type)
+		//.def_readonly("oh_optimization_type", &ERBuildOptimizer::oh_optimization_type);
 
 	py::class_<Tarnished>(m, "Tarnished", py::dynamic_attr())
 		.def(py::init<>())

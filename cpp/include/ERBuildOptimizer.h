@@ -13,6 +13,7 @@ enum class DAMAGE_TYPE {
 
 namespace py = pybind11;
 
+/*
 enum OPTIMIZATION_TYPE {
 	DAMAGE_TOTAL,
 	DAMAGE_PHYSICAL,
@@ -27,7 +28,7 @@ enum OPTIMIZATION_TYPE {
 	STATUS_SLEEP,
 	STATUS_MADNESS,
 	STATUS_SCARLET_ROT
-};
+};*/
 
 struct AttributeTuple {
 	int strength = 0;
@@ -90,7 +91,7 @@ private:
 	static int const CALC_FAIL_LEVEL_HIGH = 1;
 	static int const CALC_FAIL_LEVEL_LOW = 2;
 	static int const CALC_FAIL_NULL_RESULT = 3;
-	static int const CALC_FAIL_INVALID_OPT = 4;
+	//static int const CALC_FAIL_INVALID_OPT = 4;
 
 	constexpr static double const EVAL_THRESHOLD = 1.0;
 
@@ -109,16 +110,16 @@ private:
 								   double adj_pt_grow_4);
 
 	static double EvaluateWeaponDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
-	static double EvaluateSkillDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
-	static double EvaluateStatusEffect(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
+	//static double EvaluateSkillDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
+	//static double EvaluateStatusEffect(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er);
 
-	static std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> GetOptEvaluator(OPTIMIZATION_TYPE optimization_type);
+	//static std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> GetOptEvaluator(OPTIMIZATION_TYPE optimization_type);
 
 	void CalcWeaponDamage(Weapon &weapon, const Tarnished &tarnished) const;
 	void CalcPassives(Weapon &weapon) const;
 	void CalcWeaponSkill(const Weapon &weapon, const Tarnished &tarnished, WeaponSkill &selected_skill) const;
 	int Validate(const int min_max[][2]) const;
-	int ValidateOptimization() const;
+	//int ValidateOptimization() const;
 	static double CalculateCorrectedDamage(const Weapon &selected_weapon,
 										   const AttributeTuple &attribute_tuple,
 										   const CorrectionTuple &scaling_tuple,
@@ -138,10 +139,11 @@ public:
 	Weapon oh_weapon;
 	WeaponSkill mh_skill;
 	WeaponSkill oh_skill;
-	OPTIMIZATION_TYPE mh_optimization_type;
-	OPTIMIZATION_TYPE oh_optimization_type;
+	//OPTIMIZATION_TYPE mh_optimization_type;
+	//OPTIMIZATION_TYPE oh_optimization_type;
 
-	ERBuildOptimizer(int target_level, bool is_two_handing, const py::dict &character, int mh_optimization_type, int oh_optimization_type);
+	//ERBuildOptimizer(int target_level, bool is_two_handing, const py::dict &character, int mh_optimization_type, int oh_optimization_type);
+	ERBuildOptimizer(int target_level, bool is_two_handing, const py::dict &character);
 	void SetWeapon(bool main_hand, const py::dict &w);
 	void SetWeaponSkill(bool main_hand, const py::dict &skill);
 	void Optimize();

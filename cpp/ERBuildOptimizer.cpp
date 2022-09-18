@@ -341,13 +341,13 @@ int ERBuildOptimizer::Validate(const int min_max[][2]) const {
 // Python typed Constructor
 ERBuildOptimizer::ERBuildOptimizer(const int target_level,
 								   const bool is_two_handing,
-								   const py::dict &character,
-								   const int mh_optimization_type,
-								   const int oh_optimization_type) {
+								   const py::dict &character) {
+								   //const int mh_optimization_type,
+								   //const int oh_optimization_type) {
 	this->target_level = target_level;
 	this->is_two_handing = is_two_handing;
-	this->mh_optimization_type = (OPTIMIZATION_TYPE)mh_optimization_type;
-	this->oh_optimization_type = (OPTIMIZATION_TYPE)oh_optimization_type;
+	//this->mh_optimization_type = (OPTIMIZATION_TYPE)mh_optimization_type;
+	//this->oh_optimization_type = (OPTIMIZATION_TYPE)oh_optimization_type;
 
 	// Fill out optimal_character with
 	optimal_character.name = string(py::str(character["name"]));
@@ -745,10 +745,11 @@ void ERBuildOptimizer::Optimize() {
 		return;
 
 	// Validate optimization type. We can't optimize for say, fire damage, if the weapon doesn't scale with fire.
+	/*
 	calculation_result = ValidateOptimization();
 	if (calculation_result != CALC_PROCEED)
 		return;
-
+	*/
 
 	// Determine the upper limit of attribute points that will be spread between STR, DEX, INT, FAI, and ARC
 	int subset_target = target_level + LEVEL_OFFSET - optimal_character.vigor - optimal_character.mind - optimal_character.endurance;
@@ -830,6 +831,7 @@ void ERBuildOptimizer::Optimize() {
 }
 
 // Determine which evaluation function should be used, based on the selected optimization type.
+/*
 std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> ERBuildOptimizer::GetOptEvaluator(OPTIMIZATION_TYPE optimization_type) {
 	// Weapon attack
 	if (optimization_type >= OPTIMIZATION_TYPE::DAMAGE_TOTAL && optimization_type <= OPTIMIZATION_TYPE::DAMAGE_HOLY) {
@@ -845,21 +847,21 @@ std::function<double(AttributeTuple &, bool, ERBuildOptimizer &)> ERBuildOptimiz
 	if (optimization_type >= OPTIMIZATION_TYPE::STATUS_POISON) {
 		return EvaluateStatusEffect;
 	}
-}
+}*/
 
 // Evaluate by Weapon Damage
 double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er) {
 	// 0: total, 1: physical, 2: magic, 3: fire, 4: lightning, 5: holy
 	double damage[6]{0, 0, 0, 0, 0, 0};
 	Weapon *weapon;
-	OPTIMIZATION_TYPE optimization_type;
+	//OPTIMIZATION_TYPE optimization_type;
 
 	if (main_hand) {
 		weapon = &er.mh_weapon;
-		optimization_type = er.mh_optimization_type;
+		//optimization_type = er.mh_optimization_type;
 	} else {
 		weapon = &er.oh_weapon;
-		optimization_type = er.oh_optimization_type;
+		//optimization_type = er.oh_optimization_type;
 	}
 
 	CorrectionTuple scaling_tuple{
@@ -914,9 +916,11 @@ double ERBuildOptimizer::EvaluateWeaponDamage(const AttributeTuple &attribute_tu
 	damage[0] = damage[1] + damage[2] + damage[3] + damage[4] + damage[5];
 
 	// Return the desired damage type.
-	return damage[optimization_type];
+	//return damage[optimization_type];
+	return damage[0];
 }
 
+/*
 double ERBuildOptimizer::EvaluateSkillDamage(const AttributeTuple &attribute_tuple, bool main_hand, ERBuildOptimizer &er) {
 	Weapon *weapon;
 	WeaponSkill *skill;
@@ -1177,6 +1181,7 @@ double ERBuildOptimizer::EvaluateStatusEffect(const AttributeTuple &attribute_tu
 	// You see what I did here? I thought it was clever.
 	return status[optimization_type - OPTIMIZATION_TYPE::STATUS_POISON];
 }
+*/
 
 // Set main hand and off hand weapon skills.
 void ERBuildOptimizer::SetWeaponSkill(const bool main_hand, const py::dict &s) {
@@ -1643,6 +1648,7 @@ void ERBuildOptimizer::GetWeaponSkillScaling(const Weapon &weapon,
 }
 
 // Validate that we're not optimizing for a non-scaling damage type.
+/*
 int ERBuildOptimizer::ValidateOptimization() const {
 	if (using_main_hand) {
 		switch (mh_optimization_type) {
@@ -1757,6 +1763,4 @@ int ERBuildOptimizer::ValidateOptimization() const {
 	}
 
 	return CALC_FAIL_INVALID_OPT;
-}
-
-
+}*/
