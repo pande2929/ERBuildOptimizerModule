@@ -14,7 +14,7 @@ bo_module = Pybind11Extension(
 
 setup(
     name='ERBuildOptimizerModule',
-    version='0.8',
+    version='0.8.1',
     author="Morgan Scales",
     author_email="morganscales118@gmail.com",
     description='Build optimization backend functionality.',
