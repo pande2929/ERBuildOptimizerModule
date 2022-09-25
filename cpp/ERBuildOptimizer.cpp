@@ -814,7 +814,6 @@ void ERBuildOptimizer::Optimize() {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
 		// This shouldn't happen.
 		calculation_result = CALC_FAIL_NULL_RESULT;
-        //cout << (int)((solution_sets[solution_count - 1] & STR_MASK) >> 32) << endl;
 	}
 
 	// Calculate resultant stats.

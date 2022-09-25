@@ -65,7 +65,7 @@ vector<unsigned long long> SubsetSum::GetAllSubsets(const int target, const int 
     auto f0 = async(launch::async, &SubsetSum::GetSubsetPartial, target, 0 * set_size + offset, set_size, min_max);
     auto f1 = async(launch::async, &SubsetSum::GetSubsetPartial, target, 1 * set_size + offset, set_size, min_max);
     auto f2 = async(launch::async, &SubsetSum::GetSubsetPartial, target, 2 * set_size + offset, set_size, min_max);
-    auto f3 = async(launch::async, &SubsetSum::GetSubsetPartial, target, 3 * set_size + offset, remainder - 1, min_max);
+    auto f3 = async(launch::async, &SubsetSum::GetSubsetPartial, target, 3 * set_size + offset, remainder, min_max);
 
     // Combine async results into one vector
     ConcatVector(solutions, f0.get());
