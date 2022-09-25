@@ -781,6 +781,8 @@ void ERBuildOptimizer::Optimize() {
 		attribute_tuple.faith = (int)((solution_sets[i] & FAI_MASK) >> 8);
 		attribute_tuple.arcane = (int)(solution_sets[i] & ARC_MASK);
 
+        cout << attribute_tuple.strength << endl;
+
 		mh_result = 0;
 		oh_result = 0;
 
