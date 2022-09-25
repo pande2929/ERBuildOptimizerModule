@@ -88,8 +88,8 @@ private:
 
 	static int const CALC_PROCEED = -1;
 	static int const CALC_SUCCESS = 0;
-	static int const CALC_FAIL_LEVEL_HIGH = 1;
-	static int const CALC_FAIL_LEVEL_LOW = 2;
+    static int const CALC_ATTR_LOW = 1;
+    static int const CALC_ATTR_HIGH = 2;
 	static int const CALC_FAIL_NULL_RESULT = 3;
 	//static int const CALC_FAIL_INVALID_OPT = 4;
 

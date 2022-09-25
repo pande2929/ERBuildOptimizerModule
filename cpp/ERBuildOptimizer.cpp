@@ -329,10 +329,10 @@ int ERBuildOptimizer::Validate(const int min_max[][2]) const {
 
 	if (min_attainable_level > target_level) {
 		// Minimum possible attribute combo is too high for level.Decrease V, M, E, or raise Level
-		return CALC_FAIL_LEVEL_LOW;
+		return CALC_ATTR_HIGH;
 	} else if (max_attainable_level < target_level) {
 		// Maximum possible attribute combo is too low for level.Increase V, M, E, or lower Level
-		return CALC_FAIL_LEVEL_HIGH;
+		return CALC_ATTR_LOW;
 	}
 
 	return result;
