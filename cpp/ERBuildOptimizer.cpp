@@ -781,8 +781,6 @@ void ERBuildOptimizer::Optimize() {
 		attribute_tuple.faith = (int)((solution_sets[i] & FAI_MASK) >> 8);
 		attribute_tuple.arcane = (int)(solution_sets[i] & ARC_MASK);
 
-        cout << attribute_tuple.strength << endl;
-
 		mh_result = 0;
 		oh_result = 0;
 
@@ -816,6 +814,7 @@ void ERBuildOptimizer::Optimize() {
 		// If we are here at this point, it means no solution was reached after trying every possible subset.
 		// This shouldn't happen.
 		calculation_result = CALC_FAIL_NULL_RESULT;
+        cout << (int)((solution_sets[solution_count - 1] & STR_MASK) >> 32) << endl;
 	}
 
 	// Calculate resultant stats.
